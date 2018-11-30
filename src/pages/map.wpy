@@ -1,0 +1,65 @@
+<template>
+  <view class="Map">
+    <map
+      id="myMap"
+      latitude="{{latitude}}"
+      longitude="{{longitude}}"
+      markers="{{markers}}"
+      show-location
+    ></map>
+    <!-- <cover-view class="play">
+      <cover-image class="img" src="../images/" />
+    </cover-view> -->
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import { connect, getStore } from 'wepy-redux'
+
+  const store = getStore()
+  @connect({
+    mapCtx (state) {
+      return state.map.mapCtx
+    }
+  })
+  export default class Map extends wepy.page {
+    data = {
+      // 116.397428, 39.90923
+      latitude: 23.099994,
+      longitude: 113.324520,
+      markers: [{
+        id: 1,
+        latitude: 23.099994,
+        longitude: 113.324520,
+        name: 'T.I.T 创意园',
+        iconPath: '../images/charger.png',
+        width: 39,
+        height: 42.5
+      }]
+    }
+    onLoad () {
+      let mapCtx = wx.createMapContext('myMap')
+      store.dispatch({
+        type: 'ASSIGNMENT_MAP_CTX',
+        payload: mapCtx
+      })
+      // 获取当前地图位置
+      mapCtx.getCenterLocation({
+        success: (res) => {
+          console.log(res)
+          this.latitude = res.latitude
+          this.longitude = res.longitude
+        }
+      })
+    }
+  }
+</script>
+<style lang="less">
+  @import "../styles/mixin.less";
+  .Map{
+    .wh(100%, 100%);
+    map{
+      .wh(100%, 100%);
+    }
+  }
+</style>

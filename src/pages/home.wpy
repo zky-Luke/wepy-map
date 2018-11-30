@@ -1,0 +1,197 @@
+<template>
+  <view class="container">
+    <view class="header">
+      <view class="left">
+        <view class="avatar">
+          <open-data type="userAvatarUrl" class="pic"></open-data>
+        </view>
+      </view>
+      <view class="center">
+        <input placeholder="搜索位置查找附近充电宝" disabled/>
+      </view>
+      <view class="right">
+        <image src="../images/seach@3x.png" mode="aspectFit"></image>
+      </view>
+    </view>
+    <view class="map">
+      <map></map>
+    </view>
+    <view class="bar">
+      <view class="location" @tap="moveToLocation">
+        <image src="../images/restoration.png" mode="aspectFit"></image>
+      </view>
+      <view class="scanning">
+        <image src="../images/scan.png" mode="aspectFit"></image>
+        <view class="text">借/还</view>
+      </view>
+      <view class="service">
+        <image src="../images/service.png" mode="aspectFit"></image>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+  import map from './map'
+  import wepy from 'wepy'
+  import { connect } from 'wepy-redux'
+
+  @connect({
+    mapCtx (state) {
+      return state.map.mapCtx
+    }
+  })
+  export default class Index extends wepy.page {
+    config = {
+      navigationBarTitleText: 'charger'
+    }
+    components = {
+      map
+    }
+    data = {}
+    onLoad () {}
+    methods = {
+      moveToLocation () {
+        this.mapCtx.moveToLocation()
+      }
+    }
+  }
+</script>
+
+<style lang="less">
+  @import "../styles/mixin.less";
+  .container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    box-sizing: border-box;
+    position: relative;
+    .header{
+      display: flex;
+      .wh-l(100%, 86rpx);
+      background-color: #FFF;
+      position: absolute;
+      left: 0;
+      top: 0;
+      z-index: 1;
+      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+      .left{
+        flex-grow: 2;
+        width:0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        &::after{
+          content: '';
+          display: block;
+          .wh(1rpx, 50rpx);
+          background: #D8D8D8;
+          position: absolute;
+          top: 50%;
+          right: 0;
+          margin-top: -25rpx;
+        }
+        .avatar{
+          .wh(50rpx, 50rpx);
+          overflow:hidden;
+          display: block;
+          border-radius: 50%;
+          position: relative;
+          box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+          .pic{
+            .wh(50rpx, 50rpx);
+            position: absolute;
+            left: 0;
+            top: 0;
+            margin-top: -4px;
+          }
+        }
+      }
+      .center{
+        flex-grow: 12;
+        width:0;
+        input{
+          .wh(100%, 100%);
+          font-size: 27rpx;
+          padding-left: 5%;
+          white-space: 5px;
+          letter-spacing: 1px;
+        }
+      }
+      .right{
+        flex-grow: 2;
+        width:0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+        &::before{
+          content: '';
+          display: block;
+          .wh(1rpx, 50rpx);
+          background: #D8D8D8;
+          position: absolute;
+          left: 0;
+          top: 50%;
+          margin-top: -25rpx;
+        }
+        image{
+          .wh(45rpx, 60rpx);
+        }
+      }
+    }
+    .map{
+      .wh(100%, 100%);
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .bar{
+      .wh(100%, auto);
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 26rpx 40rpx 26rpx;
+      box-sizing: border-box;
+      .location{
+        .wh(80rpx, 80rpx);
+        align-self: flex-end;
+        image{
+          .wh(100%, 100%);
+        }
+      }
+      .scanning{
+        .wh(160rpx, 160rpx);
+        border-radius: 50%;
+        background: #1798AD;
+        align-self: flex-end;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        image{
+          .wh(45rpx, 45rpx);
+        }
+        .text{
+          .wh(auto, auto);
+          font-size: 34rpx;
+          color: #FFF;
+          margin-top: 10rpx;
+        }
+      }
+      .service{
+        .wh(80rpx, 80rpx);
+        align-self: flex-end;
+        image{
+          .wh(100%, 100%);
+        }
+      }
+    }
+  }
+</style>
