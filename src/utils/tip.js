@@ -9,7 +9,7 @@ export default class Tips {
   }
 
   // 加载提示
-  static loading(title = "加载中") {
+  static loading(title = '加载中') {
     if (Tips.isLoading) {
       return
     }

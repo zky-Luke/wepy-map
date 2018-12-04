@@ -1,0 +1,20 @@
+<template>
+  <view class="demo">
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class Demo extends wepy.page {
+  config = {
+    navigationBarTitleText: 'charger'
+  }
+  data = {}
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.demo{}
+</style>

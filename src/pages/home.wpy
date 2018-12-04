@@ -1,197 +1,341 @@
 <template>
   <view class="container">
-    <view class="header">
-      <view class="left">
-        <view class="avatar">
-          <open-data type="userAvatarUrl" class="pic"></open-data>
-        </view>
-      </view>
-      <view class="center">
-        <input placeholder="搜索位置查找附近充电宝" disabled/>
-      </view>
-      <view class="right">
-        <image src="../images/seach@3x.png" mode="aspectFit"></image>
-      </view>
-    </view>
-    <view class="map">
-      <map></map>
-    </view>
-    <view class="bar">
-      <view class="location" @tap="moveToLocation">
-        <image src="../images/restoration.png" mode="aspectFit"></image>
-      </view>
-      <view class="scanning">
-        <image src="../images/scan.png" mode="aspectFit"></image>
-        <view class="text">借/还</view>
-      </view>
-      <view class="service">
-        <image src="../images/service.png" mode="aspectFit"></image>
-      </view>
+    <view class="Map">
+      <map
+        id="myMap"
+        latitude="{{latitude}}"
+        longitude="{{longitude}}"
+        markers="{{markers}}"
+        scale="16"
+        show-location
+        bindregionchange="regionchange"
+      >
+        <cover-view class="header">
+          <cover-view class="left" @tap="goToUser">
+            <cover-view class="avatar">
+              <cover-image src="{{avatar}}"/>
+            </cover-view>
+            <cover-view class="bar"></cover-view>
+          </cover-view>
+          <cover-view class="center" @tap="search">搜索位置查找附近充电宝</cover-view>
+          <cover-view class="right" @tap="goToStoreList">
+            <cover-image src="../images/seach@3x.png"/>
+            <cover-view class="bar"></cover-view>
+          </cover-view>
+        </cover-view>
+        <cover-image class="cover-img" src="../images/landmark.png"/>
+        <cover-image class="location" @tap="moveToLocation" src="../images/restoration.png"/>
+        <cover-image class="scanning" @tap="scanningHandle" src="../images/scanning.png"/>
+        <cover-image class="service"
+                     @tap="serviceAlert('1')"
+                     src="../images/service.png"/>
+        <cover-view class="service-mask"
+                    wx:if="{{serviceMask}}"
+                    @tap="serviceAlert('0')">
+          <cover-view class="alert">
+            <cover-view class="item"
+                        wx:for="{{serviceData}}"
+                        wx:key="{{index}}">
+              {{item.text}}
+              <cover-view class="line" wx:if="{{index !== 2}}"></cover-view>
+            </cover-view>
+          </cover-view>
+        </cover-view>
+      </map>
     </view>
   </view>
 </template>
 
 <script>
-  import map from './map'
-  import wepy from 'wepy'
-  import { connect } from 'wepy-redux'
+import wepy from 'wepy'
+import { USER_INFO } from '../utils/constant.js'
+import { connect, getStore } from 'wepy-redux'
 
-  @connect({
-    mapCtx (state) {
-      return state.map.mapCtx
-    }
-  })
-  export default class Index extends wepy.page {
-    config = {
-      navigationBarTitleText: 'charger'
-    }
-    components = {
-      map
-    }
-    data = {}
-    onLoad () {}
-    methods = {
-      moveToLocation () {
-        this.mapCtx.moveToLocation()
+const store = getStore()
+@connect({
+  mapCtx(state) {
+    return state.map.mapCtx
+  }
+})
+export default class Index extends wepy.page {
+  config = {
+    navigationBarTitleText: 'charger'
+  };
+  data = {
+    serviceData: [{
+      text: '拨打客服电话',
+      scheme: '/pages/home'
+    }, {
+      text: '常见问题',
+      scheme: ''
+    }, {
+      text: '使用方法',
+      scheme: ''
+    }],
+    serviceMask: false,
+    // 116.397428, 39.90923
+    latitude: 23.099994,
+    longitude: 113.32452,
+    locationData: { // 地图中心点
+      latitude: 0,
+      longitude: 0
+    },
+    markers: [
+      {
+        id: 1,
+        latitude: 23.099994,
+        longitude: 113.32452,
+        name: 'T.I.T 创意园',
+        iconPath: '../images/charger.png',
+        width: 34.87,
+        height: 38
+      }
+    ],
+    avatar: '' // 头像
+  }
+  async onLoad() {
+    let userInfo = wepy.getStorageSync(USER_INFO)
+    this.avatar = userInfo.avatarUrl
+    this._mapInit()
+  }
+  methods = {
+    // 当前位置
+    moveToLocation() {
+      this.mapCtx.moveToLocation()
+    },
+    // 扫码
+    scanningHandle() {
+      wx.scanCode({
+        success (res) {
+          wx.showModal({
+            title: '扫码结果',
+            content: res.result,
+            showCancel: false
+          })
+        },
+        fail (res) {
+          console.log(res)
+          wx.showModal({
+            title: '扫码结果',
+            content: res.errMsg,
+            showCancel: false
+          })
+        }
+      })
+    },
+    // 客服
+    serviceAlert(type) {
+      switch (type) {
+        case '0':
+          this.serviceMask = false
+          break
+        case '1':
+          this.serviceMask = true
+          break
+      }
+    },
+    // 我的
+    goToUser () {
+      wepy.navigateTo({
+        url: '/pages/user'
+      })
+    },
+    // 搜索附近
+    search () {
+      wx.chooseLocation({
+        success: res => {
+          console.log(res)
+          this.latitude = res.latitude
+          this.longitude = res.longitude
+          this.$apply()
+        },
+        fail (res) {
+          console.log(res)
+        }
+      })
+    },
+    // 商家列表
+    goToStoreList () {
+      wepy.navigateTo({
+        url: '/pages/storeList'
+      })
+    },
+    // 拖拽选址
+    regionchange(e) {
+      // console.log(e)
+      if (e.type === 'end') {
+        // 获取地图中心位置
+        this.mapCtx.getCenterLocation({
+          success: res => {
+            this.locationData.latitude = res.latitude
+            this.locationData.longitude = res.longitude
+          }
+        })
+        console.log(this.locationData.latitude)
+        console.log(this.locationData.longitude)
       }
     }
   }
+  // 初始化地图
+  async _mapInit() {
+    let mapCtx = await wepy.createMapContext('myMap')
+    store.dispatch({
+      type: 'ASSIGNMENT_MAP_CTX',
+      payload: mapCtx
+    })
+    wx.getLocation({
+      success: res => {
+        console.log(res)
+        this.latitude = res.latitude
+        this.longitude = res.longitude
+        this.$apply()
+      },
+      fail: res => {
+        console.log(res)
+      }
+    })
+  }
+}
 </script>
 
 <style lang="less">
-  @import "../styles/mixin.less";
-  .container {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    box-sizing: border-box;
+@import '../styles/mixin.less';
+@header: 86rpx;
+.container {
+  .wh(100%, 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  position: relative;
+  .Map {
+    .wh(100%, 100%);
     position: relative;
-    .header{
-      display: flex;
-      .wh-l(100%, 86rpx);
-      background-color: #FFF;
-      position: absolute;
-      left: 0;
-      top: 0;
-      z-index: 1;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
-      .left{
-        flex-grow: 2;
-        width:0;
+    map {
+      .wh(100%, 100%);
+      @header: 86rpx;
+      .header {
         display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        &::after{
-          content: '';
-          display: block;
-          .wh(1rpx, 50rpx);
-          background: #D8D8D8;
-          position: absolute;
-          top: 50%;
-          right: 0;
-          margin-top: -25rpx;
-        }
-        .avatar{
-          .wh(50rpx, 50rpx);
-          overflow:hidden;
-          display: block;
-          border-radius: 50%;
+        .wh-l(100%, @header);
+        background-color: #fff;
+        position: absolute;
+        left: 0;
+        top: 0;
+        z-index: 1;
+        box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.4);
+        .left {
+          flex-grow: 2;
+          width: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
           position: relative;
-          box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
-          .pic{
-            .wh(50rpx, 50rpx);
+          .avatar {
+            .wh(56rpx, 56rpx);
+            overflow: hidden;
+            display: block;
+            border-radius: 50%;
+            position: relative;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+            cover-image {
+              .wh(100%, 100%);
+            }
+          }
+          .bar {
+            .wh(3rpx, 46rpx);
+            background: #d8d8d8;
             position: absolute;
+            top: 50%;
+            right: 0;
+            margin-top: -23rpx;
+          }
+        }
+        .center {
+          flex-grow: 12;
+          width: 0;
+          font-size: 29rpx;
+          padding-left: 5%;
+          white-space: 5px;
+          line-height: @header;
+        }
+        .right {
+          flex-grow: 2;
+          width: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          position: relative;
+          cover-image {
+            .wh(47.03rpx, 34rpx);
+          }
+          .bar {
+            .wh(3rpx, 46rpx);
+            background: #d8d8d8;
+            position: absolute;
+            top: 50%;
             left: 0;
-            top: 0;
-            margin-top: -4px;
+            margin-top: -23rpx;
           }
         }
       }
-      .center{
-        flex-grow: 12;
-        width:0;
-        input{
-          .wh(100%, 100%);
-          font-size: 27rpx;
-          padding-left: 5%;
-          white-space: 5px;
-          letter-spacing: 1px;
-        }
+      .cover-img {
+        .wh(35.42rpx, 80rpx);
+        .f-center;
+        margin-top: -34rpx;
       }
-      .right{
-        flex-grow: 2;
-        width:0;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        position: relative;
-        &::before{
-          content: '';
-          display: block;
-          .wh(1rpx, 50rpx);
-          background: #D8D8D8;
-          position: absolute;
-          left: 0;
-          top: 50%;
-          margin-top: -25rpx;
-        }
-        image{
-          .wh(45rpx, 60rpx);
-        }
-      }
-    }
-    .map{
-      .wh(100%, 100%);
-      position: absolute;
-      left: 0;
-      top: 0;
-    }
-    .bar{
-      .wh(100%, auto);
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      display: flex;
-      justify-content: space-between;
-      padding: 0 26rpx 40rpx 26rpx;
-      box-sizing: border-box;
-      .location{
+      .location {
         .wh(80rpx, 80rpx);
-        align-self: flex-end;
-        image{
-          .wh(100%, 100%);
-        }
+        position: absolute;
+        left: 32rpx;
+        bottom: 40rpx;
       }
-      .scanning{
-        .wh(160rpx, 160rpx);
-        border-radius: 50%;
-        background: #1798AD;
-        align-self: flex-end;
+      .scanning {
+        .wh(200rpx, 200rpx);
+        position: absolute;
+        left: 50%;
+        bottom: 40rpx;
+        margin-left: -100rpx;
+      }
+      .service {
+        .wh(80rpx, 80rpx);
+        position: absolute;
+        right: 32rpx;
+        bottom: 40rpx;
+      }
+      .service-mask {
+        .fs;
+        z-index: 999;
         display: flex;
         justify-content: center;
         align-items: center;
-        flex-direction: column;
-        image{
-          .wh(45rpx, 45rpx);
-        }
-        .text{
-          .wh(auto, auto);
+        background-color: rgba(0, 0, 0, 0.5);
+        @alertHeight: 300rpx;
+        .alert{
+          .wh(500rpx, @alertHeight);
+          background: #FFF;
+          margin-top: -100rpx;
+          border-radius: 14rpx;
+          display: flex;
+          flex-direction: column;
           font-size: 34rpx;
-          color: #FFF;
-          margin-top: 10rpx;
-        }
-      }
-      .service{
-        .wh(80rpx, 80rpx);
-        align-self: flex-end;
-        image{
-          .wh(100%, 100%);
+          .item{
+            // .wh(100%, @alertHeight / 3)
+            line-height: @alertHeight / 3;
+            flex-grow: 1;
+            padding-left: 30rpx;
+            position: relative;
+            .line {
+              .wh(100%, 3rpx);
+              background: #DEDEDE;
+              position: absolute;
+              left: 0;
+              bottom: 0;
+            }
+          }
         }
       }
     }
   }
+}
 </style>

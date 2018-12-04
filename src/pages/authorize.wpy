@@ -1,0 +1,82 @@
+<template>
+  <view class="authorize">
+    <image class="background" src="../images/bg.png" />
+    <image class="logo" src="../images/logo.png" />
+    <button open-type="getUserInfo"
+            type="primary"
+            lang="zh_CN"
+            size="mini"
+            bindgetuserinfo="onGotUserInfo">立即使用
+    </button>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { USER_INFO } from '../utils/constant.js'
+
+export default class Authorize extends wepy.page {
+  config = {
+    navigationBarTitleText: 'charger'
+  }
+  data = {}
+  async onLoad() {
+    let res = await wepy.getSetting()
+    // console.log(res)
+    if ((res.authSetting)['scope.userInfo']) {
+      let userInfo = wepy.getStorageSync(USER_INFO)
+      // console.log(userInfo)
+      if (!userInfo.avatarUrl) {
+        let data = await wepy.getUserInfo()
+        // console.log(data)
+        if (data) {
+          wepy.setStorageSync(USER_INFO, data.userInfo)
+        }
+        // let res = await wepy.login()
+      }
+      wepy.redirectTo({
+        url: '/pages/home'
+      })
+    }
+  }
+  async onGotUserInfo(e) {
+    console.log(e)
+    if (e.detail.errMsg === 'getUserInfo:ok') {
+      let res = await wepy.login()
+      // console.log(res)
+      if (res.code) {
+        wepy.setStorageSync(USER_INFO, e.detail.userInfo)
+        console.log('login')
+        wepy.redirectTo({
+          url: '/pages/home'
+        })
+      }
+    }
+  }
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.authorize{
+  .wh(100%, 100%);
+  position: relative;
+  overflow: hidden;
+  .background{
+    .wh(100%, 100%);
+  }
+  .logo{
+    .wh(238rpx, 276rpx);
+    .f-center;
+    top: 30%;
+  }
+  button{
+    padding: 5rpx 60rpx;
+    position: absolute;
+    left: 50%;
+    bottom: 10%;
+    transform: translateX(-50%);
+    letter-spacing: 8rpx;
+  }
+}
+</style>

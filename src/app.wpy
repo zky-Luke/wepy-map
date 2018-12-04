@@ -15,7 +15,11 @@ setStore(store)
 export default class extends wepy.app {
   config = {
     pages: [
-      'pages/home'
+      'pages/storeList',
+      'pages/authorize',
+      'pages/home',
+      'pages/user'
+      // 'pages/storeList'
     ],
     window: {
       backgroundTextStyle: 'dark',
@@ -51,28 +55,6 @@ export default class extends wepy.app {
   async testAsync () {
     const data = await this.sleep(3)
     console.log(data)
-  }
-
-  getUserInfo(cb) {
-    const that = this
-    if (this.globalData.userInfo) {
-      return this.globalData.userInfo
-    }
-    // 查看是否授权
-    wx.getSetting({
-      success (res) {
-        console.log(res)
-        if (res.authSetting['scope.userInfo']) {
-          // 已经授权，可以直接调用 getUserInfo 获取头像昵称
-          wepy.getUserInfo({
-            success (res) {
-              that.globalData.userInfo = res.userInfo
-              cb && cb(res.userInfo)
-            }
-          })
-        }
-      }
-    })
   }
 }
 </script>
