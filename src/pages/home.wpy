@@ -6,7 +6,7 @@
         latitude="{{latitude}}"
         longitude="{{longitude}}"
         markers="{{markers}}"
-        scale="16"
+        scale="{{scale}}"
         show-location
         bindregionchange="regionchange"
       >
@@ -35,7 +35,8 @@
           <cover-view class="alert">
             <cover-view class="item"
                         wx:for="{{serviceData}}"
-                        wx:key="{{index}}">
+                        wx:key="{{index}}"
+                        @tap="itemHandle({{index}})">
               {{item.text}}
               <cover-view class="line" wx:if="{{index !== 2}}"></cover-view>
             </cover-view>
@@ -48,8 +49,9 @@
 
 <script>
 import wepy from 'wepy'
-import { USER_INFO } from '../utils/constant.js'
+import { USER_INFO, USER_SPECICAL_INFO } from '../utils/constant.js'
 import { connect, getStore } from 'wepy-redux'
+import api from '@/api/api'
 
 const store = getStore()
 @connect({
@@ -72,6 +74,7 @@ export default class Index extends wepy.page {
       text: '使用方法',
       scheme: ''
     }],
+    scale: 16,
     serviceMask: false,
     // 116.397428, 39.90923
     latitude: 23.099994,
@@ -104,14 +107,33 @@ export default class Index extends wepy.page {
       this.mapCtx.moveToLocation()
     },
     // 扫码
-    scanningHandle() {
+    async scanningHandle() {
       wx.scanCode({
-        success (res) {
-          wx.showModal({
-            title: '扫码结果',
-            content: res.result,
-            showCancel: false
+        async success (res) {
+          let arr = res.result.split('/')
+          let imei = arr[arr.length - 1]
+          let user = wepy.getStorageSync(USER_SPECICAL_INFO)
+          // console.log(user)
+          let result = await api.LendPortableBattery({
+            query: {
+              nmsUserId: user.userid,
+              imei: imei
+            }
           })
+          console.log(result)
+          if (result.data.status === 200) {
+            wx.showModal({
+              title: '提示',
+              content: '借出成功',
+              showCancel: false
+            })
+          } else {
+            wx.showModal({
+              title: '提示',
+              content: result.data.data.errmsg,
+              showCancel: false
+            })
+          }
         },
         fail (res) {
           console.log(res)
@@ -131,6 +153,16 @@ export default class Index extends wepy.page {
           break
         case '1':
           this.serviceMask = true
+          break
+      }
+    },
+    itemHandle(i) {
+      console.log(i)
+      switch (i) {
+        case 0:
+          wx.makePhoneCall({
+            phoneNumber: '020-37268390'
+          })
           break
       }
     },
@@ -185,10 +217,10 @@ export default class Index extends wepy.page {
     })
     wx.getLocation({
       success: res => {
-        console.log(res)
-        this.latitude = res.latitude
-        this.longitude = res.longitude
-        this.$apply()
+        // console.log(res)
+        this.locationData.latitude = res.latitude
+        this.locationData.longitude = res.longitude
+        this.mapCtx.moveToLocation()
       },
       fail: res => {
         console.log(res)

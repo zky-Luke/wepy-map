@@ -7,17 +7,17 @@
       <view class="name">{{nickName}}</view>
     </view>
     <view class="list">
-      <view class="li">
+      <view class="li" @tap="goToHandle(1)">
         <image class="icon" src="../images/list.png" mode="aspectFit"/>
         我的订单
         <image class="next" src="../images/next.png" mode="aspectFit"/>
       </view>
-      <view class="li">
+      <view class="li" @tap="goToHandle(2)">
         <image class="icon" src="../images/aboutus.png" mode="aspectFit"/>
         关于我们
         <image class="next" src="../images/next.png" mode="aspectFit"/>
       </view>
-      <view class="li">
+      <view class="li" @tap="goToHandle(3)">
         <image class="icon" src="../images/phone.png" mode="aspectFit"/>
         联系客服
         <image class="next" src="../images/next.png" mode="aspectFit"/>
@@ -42,6 +42,34 @@ export default class User extends wepy.page {
     let userInfo = wepy.getStorageSync(USER_INFO)
     this.avatar = userInfo.avatarUrl
     this.nickName = userInfo.nickName
+  }
+  methods = {
+    async goToHandle(i) {
+      console.log(i)
+      switch (i) {
+        case '1':
+          wepy.navigateTo({
+            url: '/pages/order'
+          })
+          break
+        case '2':
+          wepy.navigateTo({
+            url: '/pages/aboutUs'
+          })
+          break
+        case '3':
+          let res = await wepy.showModal({
+            title: '拨打电话',
+            content: '020-37268390'
+          })
+          if (res.confirm) {
+            wx.makePhoneCall({
+              phoneNumber: '020-37268390'
+            })
+          }
+          break
+      }
+    }
   }
 }
 </script>

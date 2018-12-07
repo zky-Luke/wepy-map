@@ -1,0 +1,58 @@
+<template>
+  <view class="aboutUs">
+    <view class="wrap">
+      <view class="logo">
+        <image src="../images/logo2.png" mode="aspectFit"/>
+      </view>
+      <view>INCHARGE</view>
+      <view class="version">v1.0.1</view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class AboutUs extends wepy.page {
+  config = {
+    navigationBarTitleText: 'charger'
+  }
+  data = {}
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.aboutUs{
+  .wh(100%, 100%);
+  text-align: center;
+  padding-top: 5%;
+  box-sizing: border-box;
+  .wrap{
+    .wh(90%, 40%);
+    border-radius: 20rpx;
+    margin: 0 auto;
+    box-shadow: 0 0 100rpx rgba(0, 0, 0, 0.2);
+    font-size: 50rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .logo{
+      .wh(190rpx, 190rpx);
+      border-radius: 50%;
+      overflow: hidden;
+      margin-bottom: 5%;
+      image{
+        .wh(100%, 100%);
+      }
+    }
+    .version{
+      font-size: 34rpx;
+      margin-top: 10rpx;
+      color: #767676;
+    }
+  }
+  
+}
+</style>
