@@ -1,0 +1,171 @@
+<template>
+  <view class="details">
+    <image class="pic" src="../images/timg.jpg"  mode="aspectFit"/>
+    <view class="information">
+      <view class="left">
+        <view class="item">
+          <image src="../images/time-icon.png"  mode="aspectFit"/>
+          <view>营业时间</view>
+          <text>10:00-23:00</text>
+        </view>
+        <view class="item">
+          <image src="../images/user.png"  mode="aspectFit"/>
+          <view>人均消费</view>
+          <text>￥50</text>
+        </view>
+        <view class="item">
+          <image src="../images/add-icon.png"  mode="aspectFit"/>
+          <view>店铺地址</view>
+          <text>中山大道棠下</text>
+        </view>
+      </view>
+      <view class="right">
+        <image src="../images/nav.png"  mode="aspectFit"/>
+        <text>110米</text>
+      </view>
+    </view>
+    <view class="charger">
+      <view class="scan">
+        <view class="top">
+          <text>扫码充电</text>
+        </view>
+        <view class="bottom">
+          <image src="../images/chargerIcon.png"  mode="aspectFit"/>
+          <text>提供座充</text>
+        </view>
+      </view>
+      <view class="power">
+        <view class="top">
+          <text>租借充电宝</text>
+        </view>
+        <view class="bottom">
+          <image src="../images/babyIcon.png"  mode="aspectFit"/>
+          <text>可借3台</text>
+          <text>可还3台</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class Details extends wepy.page {
+  config = {
+    navigationBarTitleText: '店铺详情'
+  }
+  data = {}
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.details{
+  text-align: center;
+  padding-top: 35rpx;
+  box-sizing: border-box;
+  .pic{
+    .wh(680rpx, 386.9rpx);
+    border-radius: 16rpx;
+    margin: 0 auto;
+  }
+  .information{
+    .wh(100%, 240rpx);
+    display: flex;
+    padding: 0rpx 34rpx;
+    box-sizing: border-box;
+    .left{
+      flex: 4;
+      display: flex;
+      flex-direction: column;
+      .item{
+        flex: 1;
+        font-size: 30rpx;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        image{
+          .wh(34rpx, 34rpx);
+        }
+        view{
+          color: #585858;
+          margin:0 16rpx 0 26rpx;
+        }
+        text{
+          color: #ABABAB;
+        }
+      }
+    }
+    .right{
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      image{
+        .wh(60rpx, 60rpx);
+      }
+      text{
+        font-size: 24rpx;
+        margin-top: 10rpx;
+      }
+    }
+  }
+  .charger{
+    .wh(100%, 150rpx);
+    border-top: .5rpx solid rgba(150, 150, 150, .2);
+    margin-top: 30rpx;
+    padding: 16rpx 34rpx;
+    box-sizing: border-box;
+    .scan, .power{
+      .wh-f(38%, 100%);
+      display: flex;
+      flex-direction: column;
+      text-align: left;
+      padding-left: 40rpx;
+      position: relative;
+      box-sizing: border-box;
+      .top{
+        flex: 1;
+        display: flex;
+        align-items: center;
+        text{
+          font-size: 32rpx;
+        }
+      }
+      .bottom{
+        flex: 1;
+        font-size: 28rpx;
+        color: #AAAAAA;
+        display: flex;
+        align-items: center;
+        image{
+          .wh(40rpx, 40rpx);
+          margin-right: 20rpx;
+        }
+      }
+      &::after{
+        content: '';
+        display: block;
+        .wh(8rpx, 60%);
+        position: absolute;
+        left: 0;
+        top: 50%;
+        transform: translateY(-50%);
+        background-color: #F5D822;
+      }
+    }
+    .power{
+      .wh-f(62%, 100%);
+      box-sizing: border-box;
+      .bottom{
+        text{
+          font-size: 28rpx;
+          margin-right: 20rpx;
+        }
+      }
+    }
+  }
+}
+</style>

@@ -44,7 +44,7 @@ import { USER_SPECICAL_INFO } from '@/utils/constant.js'
 
 export default class Order extends wepy.page {
   config = {
-    navigationBarTitleText: 'charger',
+    navigationBarTitleText: '我的订单',
     enablePullDownRefresh: true,
     backgroundColor: '#F4F8FB'
   }

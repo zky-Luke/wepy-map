@@ -2,7 +2,8 @@ import {
   wxRequest
 } from '@/utils/wxRequest'
 
-// const apiUser = 'https://share.startai.cn'
+// const apiUser = 'https://bs.startai.cn'
+// const apiCharger = 'https://share.startai.cn'
 const apiUser = 'http://192.168.11.148:9001'
 const apiCharger = 'http://192.168.16.21:8081'
 
@@ -22,6 +23,9 @@ const GetUserSpecicalInfo = (params) => wxRequest(params, apiUser + `/user/v1.0/
 // 借出充电宝
 const LendPortableBattery = (params) => wxRequest(params, apiCharger + '/doLend')
 
+// 查询押金金额、余额
+const GetBalanceAndDeposit = (params) => wxRequest(params, apiCharger + '/getBalanceAndDeposit')
+
 // 查询订单列表
 const QueryOrdersList = (params) => wxRequest(params, apiCharger + '/queryOrders')
 
@@ -31,6 +35,7 @@ const BalancePaymentOrder = (params) => wxRequest(params, apiCharger + '/payByBa
 export default {
   GetUserSpecicalInfo,
   LendPortableBattery,
+  GetBalanceAndDeposit,
   QueryOrdersList,
   BalancePaymentOrder
 }

@@ -84,15 +84,15 @@ export default class Index extends wepy.page {
       longitude: 0
     },
     markers: [
-      {
-        id: 1,
-        latitude: 23.099994,
-        longitude: 113.32452,
-        name: 'T.I.T 创意园',
-        iconPath: '../images/charger.png',
-        width: 34.87,
-        height: 38
-      }
+      // {
+      //   id: 1,
+      //   latitude: 23.099994,
+      //   longitude: 113.32452,
+      //   name: 'T.I.T 创意园',
+      //   iconPath: '../images/charger.png',
+      //   width: 34.87,
+      //   height: 38
+      // }
     ],
     avatar: '' // 头像
   }
@@ -221,6 +221,25 @@ export default class Index extends wepy.page {
         this.locationData.latitude = res.latitude
         this.locationData.longitude = res.longitude
         this.mapCtx.moveToLocation()
+
+        // 绘制点（调试）
+        // console.log(res.latitude)
+        // console.log(res.longitude)
+        for (let i = 1; i < 20; i++) {
+          let lat = parseFloat(((0.004 - Math.random() * 0.008) + res.latitude).toFixed(6))
+          let lng = parseFloat(((0.004 - Math.random() * 0.008) + res.longitude).toFixed(6))
+          this.markers.push({
+            id: i,
+            latitude: lat,
+            longitude: lng,
+            name: 'T.I.T 创意园',
+            iconPath: '../images/charger.png',
+            width: 34.87,
+            height: 38
+          })
+        }
+        this.$apply()
+        // console.log(this.markers)
       },
       fail: res => {
         console.log(res)
@@ -264,7 +283,7 @@ export default class Index extends wepy.page {
           align-items: center;
           position: relative;
           .avatar {
-            .wh(56rpx, 56rpx);
+            .wh(60rpx, 60rpx);
             overflow: hidden;
             display: block;
             border-radius: 50%;
@@ -286,7 +305,7 @@ export default class Index extends wepy.page {
         .center {
           flex-grow: 12;
           width: 0;
-          font-size: 29rpx;
+          font-size: 32rpx;
           padding-left: 5%;
           white-space: 5px;
           line-height: @header;
@@ -317,10 +336,10 @@ export default class Index extends wepy.page {
         margin-top: -34rpx;
       }
       .location {
-        .wh(80rpx, 80rpx);
+        .wh(100rpx, 100rpx);
         position: absolute;
         left: 32rpx;
-        bottom: 40rpx;
+        bottom: 36rpx;
       }
       .scanning {
         .wh(200rpx, 200rpx);
@@ -330,10 +349,10 @@ export default class Index extends wepy.page {
         margin-left: -100rpx;
       }
       .service {
-        .wh(80rpx, 80rpx);
+        .wh(100rpx, 100rpx);
         position: absolute;
         right: 32rpx;
-        bottom: 40rpx;
+        bottom: 36rpx;
       }
       .service-mask {
         .fs;

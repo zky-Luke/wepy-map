@@ -1,4 +1,4 @@
-import { 
+import {
   ASYNC_INCREMENT
 } from '../types/counter'
 import { createAction } from 'redux-actions'

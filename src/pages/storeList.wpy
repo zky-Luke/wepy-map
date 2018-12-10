@@ -4,182 +4,34 @@
                  scroll-y="true"
                  enable-back-to-top="true"
                  >
-      <view class="li">
+      <view class="li" wx:for="{{storeData}}"
+                       wx:key="{{index}}"
+                       @tap="itemHandle({{item}})">
         <view class="left">
           <image src="../images/timg.jpg" mode="aspectFill"/>
         </view>
         <view class="right">
           <view class="item">
-            <view class="address">沃尔玛</view>
-            <view class="km">1.356km</view>
+            <view class="address">{{item.address}}</view>
+            <view class="km">{{item.km}}</view>
           </view>
           <view class="item">
             <image class="add" src="../images/time.png" mode="aspectFit"/>
-            <view class="time">10:00-23:00</view>
+            <view class="time">{{item.time}}</view>
           </view>
           <view class="item">
             <image class="add" src="../images/add.png" mode="aspectFit"/>
-            <view class="time">中山大道棠下</view>
+            <view class="time">{{item.add}}</view>
           </view>
           <view class="item">
-            <view class="item-charger">
+            <view class="item-charger" wx:if="{{item.power}}">
               <image class="add" src="../images/chargerIcon.png" mode="aspectFit"/>
               提供座充
             </view>
-            <view class="item-baby">
+            <view class="item-baby" wx:if="{{item.charger}}">
               <image class="add" src="../images/babyIcon.png" mode="aspectFit"/>
-              <view>可借3台</view>
-              <view>可还3台</view>
-            </view>
-          </view>
-        </view>
-      </view>
-      <view class="li">
-        <view class="left">
-          <image src="../images/timg.jpg" mode="aspectFill"/>
-        </view>
-        <view class="right">
-          <view class="item">
-            <view class="address">沃尔玛</view>
-            <view class="km">1.356km</view>
-          </view>
-          <view class="item">
-            <image class="add" src="../images/time.png" mode="aspectFit"/>
-            <view class="time">10:00-23:00</view>
-          </view>
-          <view class="item">
-            <image class="add" src="../images/add.png" mode="aspectFit"/>
-            <view class="time">中山大道棠下</view>
-          </view>
-          <view class="item">
-            <view class="item-charger">
-              <image class="add" src="../images/chargerIcon.png" mode="aspectFit"/>
-              提供座充
-            </view>
-            <view class="item-baby">
-              <image class="add" src="../images/babyIcon.png" mode="aspectFit"/>
-              <view>可借3台</view>
-              <view>可还3台</view>
-            </view>
-          </view>
-        </view>
-      </view>
-      <view class="li">
-        <view class="left">
-          <image src="../images/timg.jpg" mode="aspectFill"/>
-        </view>
-        <view class="right">
-          <view class="item">
-            <view class="address">沃尔玛</view>
-            <view class="km">1.356km</view>
-          </view>
-          <view class="item">
-            <image class="add" src="../images/time.png" mode="aspectFit"/>
-            <view class="time">10:00-23:00</view>
-          </view>
-          <view class="item">
-            <image class="add" src="../images/add.png" mode="aspectFit"/>
-            <view class="time">中山大道棠下</view>
-          </view>
-          <view class="item">
-            <view class="item-charger">
-              <image class="add" src="../images/chargerIcon.png" mode="aspectFit"/>
-              提供座充
-            </view>
-            <view class="item-baby">
-              <image class="add" src="../images/babyIcon.png" mode="aspectFit"/>
-              <view>可借3台</view>
-              <view>可还3台</view>
-            </view>
-          </view>
-        </view>
-      </view>
-      <view class="li">
-        <view class="left">
-          <image src="../images/timg.jpg" mode="aspectFill"/>
-        </view>
-        <view class="right">
-          <view class="item">
-            <view class="address">沃尔玛</view>
-            <view class="km">1.356km</view>
-          </view>
-          <view class="item">
-            <image class="add" src="../images/time.png" mode="aspectFit"/>
-            <view class="time">10:00-23:00</view>
-          </view>
-          <view class="item">
-            <image class="add" src="../images/add.png" mode="aspectFit"/>
-            <view class="time">中山大道棠下</view>
-          </view>
-          <view class="item">
-            <view class="item-charger">
-              <image class="add" src="../images/chargerIcon.png" mode="aspectFit"/>
-              提供座充
-            </view>
-            <view class="item-baby">
-              <image class="add" src="../images/babyIcon.png" mode="aspectFit"/>
-              <view>可借3台</view>
-              <view>可还3台</view>
-            </view>
-          </view>
-        </view>
-      </view>
-      <view class="li">
-        <view class="left">
-          <image src="../images/timg.jpg" mode="aspectFill"/>
-        </view>
-        <view class="right">
-          <view class="item">
-            <view class="address">沃尔玛</view>
-            <view class="km">1.356km</view>
-          </view>
-          <view class="item">
-            <image class="add" src="../images/time.png" mode="aspectFit"/>
-            <view class="time">10:00-23:00</view>
-          </view>
-          <view class="item">
-            <image class="add" src="../images/add.png" mode="aspectFit"/>
-            <view class="time">中山大道棠下</view>
-          </view>
-          <view class="item">
-            <view class="item-charger">
-              <image class="add" src="../images/chargerIcon.png" mode="aspectFit"/>
-              提供座充
-            </view>
-            <view class="item-baby">
-              <image class="add" src="../images/babyIcon.png" mode="aspectFit"/>
-              <view>可借3台</view>
-              <view>可还3台</view>
-            </view>
-          </view>
-        </view>
-      </view>
-      <view class="li">
-        <view class="left">
-          <image src="../images/timg.jpg" mode="aspectFill"/>
-        </view>
-        <view class="right">
-          <view class="item">
-            <view class="address">沃尔玛</view>
-            <view class="km">1.356km</view>
-          </view>
-          <view class="item">
-            <image class="add" src="../images/time.png" mode="aspectFit"/>
-            <view class="time">10:00-23:00</view>
-          </view>
-          <view class="item">
-            <image class="add" src="../images/add.png" mode="aspectFit"/>
-            <view class="time">中山大道棠下</view>
-          </view>
-          <view class="item">
-            <view class="item-charger">
-              <image class="add" src="../images/chargerIcon.png" mode="aspectFit"/>
-              提供座充
-            </view>
-            <view class="item-baby">
-              <image class="add" src="../images/babyIcon.png" mode="aspectFit"/>
-              <view>可借3台</view>
-              <view>可还3台</view>
+              <view>可借{{item.charger.borrow}}台</view>
+              <view>可还{{item.charger.return}}台</view>
             </view>
           </view>
         </view>
@@ -198,10 +50,84 @@ import { USER_INFO } from '../utils/constant.js'
 
 export default class StoreList extends wepy.page {
   config = {
-    navigationBarTitleText: 'charger'
+    navigationBarTitleText: '附近商家'
   }
   data = {
-    avatar: ''
+    avatar: '',
+    storeData: [
+      {
+        // img: require('../images/timg.jpg'),
+        address: '沃尔玛',
+        km: '1.356km',
+        time: '10:00-23:00',
+        add: '中山大道棠下',
+        power: true,
+        charger: {
+          borrow: 3,
+          return: 3
+        }
+      },
+      {
+        // img: require('../images/timg.jpg'),
+        address: '沃尔玛',
+        km: '1.356km',
+        time: '10:00-23:00',
+        add: '中山大道棠下',
+        power: true,
+        charger: {
+          borrow: 3,
+          return: 3
+        }
+      },
+      {
+        // img: require('../images/timg.jpg'),
+        address: '沃尔玛',
+        km: '1.356km',
+        time: '10:00-23:00',
+        add: '中山大道棠下',
+        power: true,
+        charger: {
+          borrow: 3,
+          return: 3
+        }
+      },
+      {
+        // img: require('../images/timg.jpg'),
+        address: '沃尔玛',
+        km: '1.356km',
+        time: '10:00-23:00',
+        add: '中山大道棠下',
+        power: true,
+        charger: {
+          borrow: 3,
+          return: 3
+        }
+      },
+      {
+        // img: require('../images/timg.jpg'),
+        address: '沃尔玛',
+        km: '1.356km',
+        time: '10:00-23:00',
+        add: '中山大道棠下',
+        power: true,
+        charger: {
+          borrow: 3,
+          return: 3
+        }
+      },
+      {
+        // img: require('../images/timg.jpg'),
+        address: '沃尔玛',
+        km: '1.356km',
+        time: '10:00-23:00',
+        add: '中山大道棠下',
+        power: true,
+        charger: {
+          borrow: 3,
+          return: 3
+        }
+      }
+    ]
   }
   onLoad() {
     let userInfo = wepy.getStorageSync(USER_INFO)
@@ -211,6 +137,12 @@ export default class StoreList extends wepy.page {
     goToHome() {
       wepy.navigateBack({
         delta: 1
+      })
+    },
+    itemHandle (item) {
+      // console.log(item)
+      wepy.navigateTo({
+        url: '/pages/details'
       })
     }
   }
@@ -259,7 +191,7 @@ export default class StoreList extends wepy.page {
           align-items: center;
           position: relative;
           .address{
-            font-size: 34rpx;
+            font-size: 30rpx;
             font-weight: bold;
           }
           .km{
@@ -309,7 +241,7 @@ export default class StoreList extends wepy.page {
     display: flex;
     justify-content: center;
     align-items: center;
-    font-size: 34rpx;
+    font-size: 32rpx;
     image{
        .wh(40rpx, 40rpx);
        margin-right: 10rpx;
