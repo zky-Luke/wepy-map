@@ -99,9 +99,9 @@ export default class User extends wepy.page {
       }
     }
   }
-  onUnload() {
-    console.log(666)
-  }
+  // onUnload() {
+  //   console.log(666)
+  // }
 }
 </script>
 

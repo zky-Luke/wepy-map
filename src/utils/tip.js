@@ -36,7 +36,6 @@ export default class Tips {
     if (Tips.isLoading) {
       clearTimeout(this.timer)
       Tips.isLoading = false
-      wx.hideToast()
       wx.hideLoading()
     }
   }

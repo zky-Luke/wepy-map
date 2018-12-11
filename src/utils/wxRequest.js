@@ -14,15 +14,24 @@ const wxRequest = async(params = {}, url) => {
     // data.time = TIMESTAMP
   console.log(url)
   console.log(data)
-
-  let res = await wepy.request({
-    url: url,
-    method: params.method || 'GET',
-    data: data,
-    header: { 'Content-Type': 'application/json' }
-  })
-  tip.loaded()
-  return res
+  try {
+    let res = await wepy.request({
+      url: url,
+      method: params.method || 'GET',
+      data: data,
+      header: { 'Content-Type': 'application/json' }
+    })
+    tip.loaded()
+    return res
+  } catch (err) {
+    tip.loaded()
+    wx.showModal({
+      title: '提示',
+      content: err.errMsg,
+      showCancel: false
+    })
+    return Promise.reject(err.errMsg)
+  }
 }
 
 module.exports = {

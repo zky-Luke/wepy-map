@@ -34,6 +34,9 @@ export default class Authorize extends wepy.page {
         if (data) {
           wepy.setStorageSync(USER_INFO, data.userInfo)
         }
+      }
+      let user = wepy.getStorageSync(USER_SPECICAL_INFO)
+      if (!user.userid) {
         let res = await wepy.login()
         if (res.code) {
           wepy.setStorageSync(USEE_CODE, res.code)
@@ -58,7 +61,7 @@ export default class Authorize extends wepy.page {
     console.log(e)
     if (e.detail.errMsg === 'getUserInfo:ok') {
       let res = await wepy.login()
-      console.log(res)
+      // console.log(res)
       if (res.code) {
         wepy.setStorageSync(USER_INFO, e.detail.userInfo)
         wepy.setStorageSync(USEE_CODE, res.code)

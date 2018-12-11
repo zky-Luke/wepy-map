@@ -2,10 +2,11 @@ import {
   wxRequest
 } from '@/utils/wxRequest'
 
-// const apiUser = 'https://bs.startai.cn'
+const apiUser = 'https://bs.startai.cn'
 // const apiCharger = 'https://share.startai.cn'
-const apiUser = 'http://192.168.11.148:9001'
-const apiCharger = 'http://192.168.16.21:8081'
+const apiCharger = 'http://39.107.104.221:8081/shared-power-bank-h5'
+// const apiUser = 'http://192.168.11.148:9001'
+// const apiCharger = 'http://192.168.16.21:8081'
 
 /**
  * LOGIN

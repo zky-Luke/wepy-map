@@ -113,7 +113,8 @@ export default class Index extends wepy.page {
           let arr = res.result.split('/')
           let imei = arr[arr.length - 1]
           let user = wepy.getStorageSync(USER_SPECICAL_INFO)
-          // console.log(user)
+          console.log('user')
+          console.log(user)
           let result = await api.LendPortableBattery({
             query: {
               nmsUserId: user.userid,
