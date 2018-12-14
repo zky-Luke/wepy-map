@@ -1,0 +1,126 @@
+<template>
+  <view class="recharge">
+    <view class="text">请选择充值金额</view>
+    <view class="ul">
+      <view class="li {{active === index ? 'active' : ''}}"
+            wx:for="{{listData}}"
+            wx:key="item"
+            @tap="itemHandle({{item}}, {{index}})">
+        {{item.amount}}元
+      </view>
+    </view>
+    <view class="pay" @tap="pay">微信支付</view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+// import { USER_SPECICAL_INFO, QIXING_APPID } from '../utils/constant.js'
+// import api from '@/api/api'
+import { WePay } from '../utils/wepay.js'
+
+export default class Recharge extends wepy.page {
+  config = {
+    navigationBarTitleText: '充值'
+  }
+  data = {
+    listData: [
+      {
+        amount: 0.01
+      },
+      {
+        amount: 5
+      },
+      {
+        amount: 10
+      },
+      {
+        amount: 15
+      }
+    ],
+    active: 0,
+    selectAmount: 0
+  }
+  async onLoad() {
+    this.selectAmount = this.listData[0].amount
+  }
+  methods = {
+    itemHandle(item, index) {
+      this.active = index
+      this.selectAmount = item.amount
+    },
+    pay () {
+      console.log(this.selectAmount)
+      // 获取订单号
+      WePay({
+        fee: this.selectAmount * 100,
+        type: 1,
+        fun: (res) => {
+          console.log(res)
+        }
+      })
+    }
+  }
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.recharge{
+  .wh(100%, 100%);
+  padding-top: 5%;
+  .text{
+    .wh-l(400rpx, 50rpx);
+    margin: 0 auto;
+    // background-color: red;
+    text-align: center;
+    position: relative;
+    color: #919191;
+    &::before{
+      content: '';
+      display: block;
+      .wh(70rpx, 4rpx);
+      background-color: silver;
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    &::after{
+      content: '';
+      display: block;
+      .wh(70rpx, 4rpx);
+      background-color: silver;
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+  .ul{
+    .wh(74%, 260rpx);
+    display: flex;
+    flex-wrap: wrap;
+    align-content: stretch;
+    justify-content: space-between;
+    margin: 50rpx auto 80rpx auto;
+    .li{
+      .wh-l(220rpx, 100rpx);
+      border: 1rpx solid #D4D4D4;
+      text-align: center;
+      // margin-right: 20rpx;
+    }
+    .active{
+      background-color: #FFF7F5;
+      border: 1rpx solid #DCBC73;
+    }
+  }
+  .pay{
+    .wh-l(90%, 80rpx);
+    background-color: #64C940;
+    color: #FFF;
+    text-align: center;
+    margin: 0 auto;
+  }
+}
+</style>

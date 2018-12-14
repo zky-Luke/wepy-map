@@ -1,0 +1,132 @@
+<template>
+  <view class="transaction">
+    <view class="list">
+      <view class="li">
+        <view class="left">
+          <view class="describe">
+            <text class="text">座充</text>          
+            <text class="pay">付款成功</text>          
+          </view>
+          <view class="date">2017.05.09 20:34</view>
+        </view>        
+        <view class="right">
+          <view class="money">
+            <text class="number">-6</text>          
+            <text class="unit">元</text>   
+          </view>
+          <text class="payType">微信支付</text>
+        </view>        
+      </view>
+      <view class="li">
+        <view class="left">
+          <view class="describe">
+            <text class="text">座充</text>          
+            <text class="pay">付款成功</text>          
+          </view>
+          <view class="date">2017.05.09 20:34</view>
+        </view>        
+        <view class="right">
+          <view class="money">
+            <text class="number">-6</text>          
+            <text class="unit">元</text>   
+          </view>
+          <text class="payType">微信支付</text>
+        </view>        
+      </view>
+      <view class="li">
+        <view class="left">
+          <view class="describe">
+            <text class="text">座充</text>          
+            <text class="pay">付款成功</text>          
+          </view>
+          <view class="date">2017.05.09 20:34</view>
+        </view>        
+        <view class="right">
+          <view class="money">
+            <text class="number">-6</text>          
+            <text class="unit">元</text>   
+          </view>
+          <text class="payType">微信支付</text>
+        </view>        
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class Transaction extends wepy.page {
+  config = {
+    navigationBarTitleText: '交易明细'
+  }
+  data = {}
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.transaction{
+  .wh(100%, 100%);
+  background-color: #F7F7F7;
+  position: relative;
+  .list{
+    .wh(100%, auto);
+    padding: 4% 5%;
+    box-sizing: border-box;
+    .li{
+      .wh(100%, 160rpx);
+      background-color: #fff;
+      border-radius: 20rpx;
+      padding: 26rpx 30rpx;
+      box-sizing: border-box;
+      box-shadow: 0 0 40rpx rgba(0, 0, 0, 0.1);
+      display: flex;
+      margin-bottom: 26rpx;
+      .left{
+        flex: 3;
+        display: flex;
+        flex-direction: column;
+        .describe{
+          flex: 1;
+          .text{
+            margin-right: 20rpx;
+          }
+          .pay{}
+        }
+        .date{
+          flex: 1;
+          line-height: 110rpx;
+          font-size: 29rpx;
+          color: #999;
+        }
+      }
+      .right{
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        text-align: right;
+        .money{
+          display: flex;
+          align-items: baseline;
+          justify-content: flex-end;
+          color: #FF2C2C;
+          .number{
+            font-size: 60rpx;
+            margin-right: 20rpx;
+          }
+          .unit{
+            font-size: 32rpx;
+          }
+        }
+        .payType{
+          font-size: 28rpx;
+          color: #999;
+          margin-top: 20rpx;
+        }
+      }
+    }
+  }
+}
+</style>

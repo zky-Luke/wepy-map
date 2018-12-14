@@ -1,0 +1,207 @@
+<template>
+  <view class="wallet">
+    <view class="wrap">
+      <view class="logo">
+        <image src="../images/bag.png" mode="aspectFit"/>
+      </view>
+      <view class="text">余额账户</view>
+      <view class="money">
+        <text class="number">{{amount / 100}}</text>
+        <text class="unit">元</text>
+      </view>
+      <view class="button" @tap="goToHandle(1)">充值</view>
+    </view>
+    <view class="deposit" @tap="goToHandle(2)">
+      <view class="left">押金</view>
+      <view class="right">
+        <text class="unpaid" wx:if="{{deposit === 0}}">未交押金</text>
+        <text class="paid" wx:if="{{deposit !== 0}}">已交押金</text>
+        <image src="../images/next.png" mode="aspectFit"/>
+      </view>
+    </view>
+    <view class="transaction" @tap="goToHandle(3)">
+      <view class="left">明细</view>
+      <view class="right">
+        <image src="../images/next.png" mode="aspectFit"/>
+      </view>
+    </view>
+    <view class="{{amount === 0 ? '' : 'canWithdraw'}} withdraw" @tap="goToHandle(4)">提现</view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { USER_SPECICAL_INFO } from '../utils/constant.js'
+import api from '@/api/api'
+
+export default class Wallet extends wepy.page {
+  config = {
+    navigationBarTitleText: '我的钱包'
+  }
+  data = {
+    amount: 0,
+    deposit: 0
+  }
+  async onLoad () {
+    // 查询余额
+    let user = wepy.getStorageSync(USER_SPECICAL_INFO)
+    let res = await api.GetBalanceAndDeposit({
+      query: {
+        userId: user.userid
+      }
+    })
+    console.log(res)
+    if (res.data.status === 200) {
+      this.amount = res.data.data.amount
+      this.deposit = res.data.data.deposit
+      this.$apply()
+    } else {
+      wx.showModal({
+        title: '提示',
+        content: res.data.data.errmsg,
+        showCancel: false
+      })
+    }
+  }
+  methods = {
+    goToHandle (i) {
+      switch (i) {
+        case '1':
+          wepy.navigateTo({
+            url: '/pages/recharge'
+          })
+          break
+        case '2':
+          wepy.navigateTo({
+            url: '/pages/deposit?deposit=' + this.deposit
+          })
+          break
+        case '3':
+          wepy.navigateTo({
+            url: '/pages/transaction'
+          })
+          break
+        case '4':
+          if (this.amount !== 0) {
+            wepy.navigateTo({
+              url: '/pages/withdraw?amount=' + this.amount
+            })
+          }
+          break
+      }
+    }
+  }
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.wallet{
+  .wh(100%, 100%);
+  text-align: center;
+  padding-top: 5%;
+  box-sizing: border-box;
+  position: relative;
+  .wrap{
+    .wh(90%, 40%);
+    border-radius: 20rpx;
+    margin: 0 auto 0 auto;
+    box-shadow: 0 0 100rpx rgba(0, 0, 0, 0.1);
+    font-size: 50rpx;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 5%;
+    box-sizing: border-box;
+    position: relative;
+    .logo{
+      .wh(170rpx, 170rpx);
+      border-radius: 50%;
+      overflow: hidden;
+      margin-bottom: 30rpx;
+      image{
+        .wh(100%, 100%);
+      }
+    }
+    .text{
+      font-size: 32rpx;
+      color: #999;
+    }
+    .money{
+      display: flex;
+      align-items: baseline;
+      margin-top: 10rpx;
+      .number{
+        font-size: 66rpx;
+        margin-right: 20rpx;
+      }
+      .unit{
+        font-size: 30rpx;
+      }
+    }
+    .button{
+      .wh-l(500rpx, 76rpx);
+      font-size: 32rpx;
+      border-radius: 38rpx;
+      background: #F5D822;
+      position: absolute;
+      left: 50%;
+      bottom: -33rpx;
+      transform: translateX(-50%);
+    }
+  }
+  .deposit, .transaction{
+    .wh-l(90%, 86rpx);
+    display: flex;
+    position: relative;
+    margin: 80rpx auto 0 auto;
+    box-shadow: 0 0 100rpx rgba(0, 0, 0, 0.1);
+    font-size: 32rpx;
+    padding: 0 68rpx 0 30rpx;
+    box-sizing: border-box;
+    border-radius: 20rpx;
+    .left{
+      flex: 1;
+      text-align: left;
+      font-size: 32rpx;
+    }
+    .right{
+      flex: 1;
+      text-align: right;
+      font-size: 29rpx;
+      line-height: 82rpx;
+      .unpaid{
+        color: #FF2C2C;
+      }
+      .paid{
+        color: #999;
+      }
+      image{
+        .wh(30rpx, 30rpx);
+        position: absolute;
+        right: 28rpx;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+    }
+  }
+  .transaction{
+    margin-top: 40rpx;
+    box-shadow: none;
+  }
+  .withdraw{
+    .wh-l(90%, 100rpx);
+    background: #F7F7F7;
+    color: #9A9A9A;
+    border-radius: 20rpx;
+    position: absolute;
+    left: 50%;
+    bottom: 7%;
+    transform: translateX(-50%);
+  }
+  .canWithdraw{
+    background: #F5D822;
+    color: #333;
+  }
+}
+</style>

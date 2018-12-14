@@ -1,7 +1,3 @@
-export const INCREMENT = 'INCREMENT'
-
-export const DECREMENT = 'DECREMENT'
-
 export const ASYNC_INCREMENT = 'ASYNC_INCREMENT'
 
 /**
@@ -10,3 +6,10 @@ export const ASYNC_INCREMENT = 'ASYNC_INCREMENT'
  */
 
 export const ASSIGNMENT_MAP_CTX = 'ASSIGNMENT_MAP_CTX'
+
+/**
+ * 支付类
+ * @const  {string}
+ */
+
+export const WECHART_PAY = 'WECHART_PAY'

@@ -24,10 +24,10 @@ export default class Authorize extends wepy.page {
   data = {}
   async onLoad() {
     let res = await wepy.getSetting()
-    // console.log(res)
+    console.log(res)
     if ((res.authSetting)['scope.userInfo']) {
       let userInfo = wepy.getStorageSync(USER_INFO)
-      // console.log(userInfo)
+      console.log(userInfo)
       if (!userInfo.avatarUrl) {
         let data = await wepy.getUserInfo()
         // console.log(data)
@@ -61,7 +61,7 @@ export default class Authorize extends wepy.page {
     console.log(e)
     if (e.detail.errMsg === 'getUserInfo:ok') {
       let res = await wepy.login()
-      // console.log(res)
+      console.log(res)
       if (res.code) {
         wepy.setStorageSync(USER_INFO, e.detail.userInfo)
         wepy.setStorageSync(USEE_CODE, res.code)
@@ -80,7 +80,7 @@ export default class Authorize extends wepy.page {
         } else {
           let tip = await wepy.showModal({
             title: '登录结果',
-            content: error[result.data.status] || '登录失败'
+            content: error[result.data.message] || '登录失败'
           })
           if (tip.confirm) {
             wepy.redirectTo({

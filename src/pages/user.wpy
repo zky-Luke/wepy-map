@@ -5,23 +5,28 @@
         <image src="{{avatar}}"/>
       </view>
       <view class="name">{{nickName}}</view>
-      <view class="money">
-        <text>押金：{{deposit}}</text>
-        <text>余额：{{amount}}</text>
-      </view>
+      <!-- <view class="money">
+        <text>押金：{{deposit / 100}}</text>
+        <text>余额：{{amount / 100}}</text>
+      </view> -->
     </view>
     <view class="list">
       <view class="li" @tap="goToHandle(1)">
+        <image class="icon" src="../images/bag@3x.png" mode="aspectFit"/>
+        我的钱包
+        <image class="next" src="../images/next.png" mode="aspectFit"/>
+      </view>
+      <view class="li" @tap="goToHandle(2)">
         <image class="icon" src="../images/list.png" mode="aspectFit"/>
         我的订单
         <image class="next" src="../images/next.png" mode="aspectFit"/>
       </view>
-      <view class="li" @tap="goToHandle(2)">
+      <view class="li" @tap="goToHandle(3)">
         <image class="icon" src="../images/aboutus.png" mode="aspectFit"/>
         关于我们
         <image class="next" src="../images/next.png" mode="aspectFit"/>
       </view>
-      <view class="li" @tap="goToHandle(3)">
+      <view class="li" @tap="goToHandle(4)">
         <image class="icon" src="../images/phone.png" mode="aspectFit"/>
         联系客服
         <image class="next" src="../images/next.png" mode="aspectFit"/>
@@ -32,8 +37,7 @@
 
 <script>
 import wepy from 'wepy'
-import { USER_INFO, USER_SPECICAL_INFO } from '../utils/constant.js'
-import api from '@/api/api'
+import { USER_INFO } from '../utils/constant.js'
 
 export default class User extends wepy.page {
   config = {
@@ -41,35 +45,13 @@ export default class User extends wepy.page {
   }
   data = {
     avatar: '',
-    nickName: '',
-    amount: 0,
-    deposit: 0
+    nickName: ''
   }
   async onLoad() {
     let userInfo = wepy.getStorageSync(USER_INFO)
     this.avatar = userInfo.avatarUrl
     this.nickName = userInfo.nickName
-
-    // console.log('getCurrentPages:', getCurrentPages())
-    // 查询余额
-    let user = wepy.getStorageSync(USER_SPECICAL_INFO)
-    let res = await api.GetBalanceAndDeposit({
-      query: {
-        userId: user.userid
-      }
-    })
-    console.log(res)
-    if (res.data.status === 200) {
-      this.amount = res.data.data.amount
-      this.deposit = res.data.data.deposit
-      this.$apply()
-    } else {
-      wx.showModal({
-        title: '提示',
-        content: res.data.data.errmsg,
-        showCancel: false
-      })
-    }
+    // console.log(this.$parent)
   }
   methods = {
     async goToHandle(i) {
@@ -77,15 +59,20 @@ export default class User extends wepy.page {
       switch (i) {
         case '1':
           wepy.navigateTo({
-            url: '/pages/order'
+            url: '/pages/wallet'
           })
           break
         case '2':
           wepy.navigateTo({
-            url: '/pages/aboutUs'
+            url: '/pages/order'
           })
           break
         case '3':
+          wepy.navigateTo({
+            url: '/pages/aboutUs'
+          })
+          break
+        case '4':
           let res = await wepy.showModal({
             title: '拨打电话',
             content: '020-37268390'
@@ -122,7 +109,7 @@ export default class User extends wepy.page {
     }
     &::after{
       content: '';
-      .wh(110%, 68%);
+      .wh(110%, 56%);
       display: block;
       background: #FFF;
       position: absolute;
@@ -137,7 +124,7 @@ export default class User extends wepy.page {
       position: absolute;
       z-index: 1;
       left: 50%;
-      top: 10%;
+      top: 22%;
       transform: translateX(-50%);
       box-shadow: 0px 2px 8px rgba(255, 255, 3, 0.8);
       image{
@@ -150,7 +137,7 @@ export default class User extends wepy.page {
       position: absolute;
       z-index: 1;
       left: 50%;
-      top: 60%;
+      top: 72%;
       transform: translateX(-50%);
       font-size: 40rpx;
     }

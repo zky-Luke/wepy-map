@@ -1,0 +1,105 @@
+<template>
+  <view class="withdraw">
+    <view class="top">
+      <image src="../images/txbg.png" mode="aspectFit"/>
+      <view class="money">
+        <text class="number">{{amount / 100}}</text>
+        <text class="unit">元</text>
+      </view>
+      <text class="text">余额</text>
+    </view>
+    <view class="wepay">
+      <image src="../images/wechat.png" mode="aspectFit"/>
+      <text class="text">微信账号</text>
+      <icon class="icon" type="success" size="40rpx" color="#0ABA07" />
+    </view>
+    <view class="button">确认提现</view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class Withdraw extends wepy.page {
+  config = {
+    navigationBarTitleText: '提现'
+  }
+  data = {
+    amount: 0
+  }
+  async onLoad(options) {
+    this.amount = options.amount
+  }
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.withdraw{
+  .wh(100%, 100%);
+  padding-top: 4%;
+  background-color: #F7F7F7;
+  position: relative;
+  .top{
+    .wh(700rpx, 300rpx);
+    margin: 0 auto;
+    position: relative;
+    image{
+      .wh(100%, 100%);
+    }
+    .money{
+      position: absolute;
+      left: 50%;
+      top: 22%;
+      transform: translateX(-50%);
+      .number{
+        font-size: 66rpx;
+        margin-right: 20rpx;
+      }
+      .unit{
+        font-size: 30rpx;
+      }
+    }
+    .text{
+      position: absolute;
+      left: 50%;
+      top: 58%;
+      transform: translateX(-50%);
+      color: #AAAAAA;
+    }
+  }
+  .wepay{
+    .wh(100%, 80rpx);
+    background-color: #fff;
+    margin-top: 30rpx;
+    padding: 0 40rpx;
+    display: flex;
+    align-items: center;
+    position: relative;
+    box-sizing: border-box;
+    image{
+      .wh(50rpx, 50rpx);
+      margin-right: 20rpx;
+    }
+    .text{
+      font-size: 32rpx;
+    }
+    .icon{
+      position: absolute;
+      top: 50%;
+      right: 40rpx;
+      transform: translateY(-50%);
+    }
+  }
+  .button{
+    .wh-l(90%, 100rpx);
+    background: #F5D822;
+    border-radius: 10rpx;
+    position: absolute;
+    left: 50%;
+    bottom: 7%;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+}
+</style>
