@@ -1,7 +1,7 @@
 <template>
   <view class="authorize">
     <image class="background" src="../images/bg.png" />
-    <image class="logo" src="../images/logo.png" />
+    <image class="logo" src="../images/logo@3.png" mode="aspectFit"/>
     <button open-type="getUserInfo"
             type="primary"
             lang="zh_CN"
@@ -16,6 +16,7 @@ import wepy from 'wepy'
 import { USER_INFO, USEE_CODE, USER_SPECICAL_INFO, QIXING_APPID } from '../utils/constant.js'
 import api from '@/api/api'
 import error from '@/utils/errorCode.js'
+import tip from '@/utils/tip.js'
 
 export default class Authorize extends wepy.page {
   config = {
@@ -60,7 +61,9 @@ export default class Authorize extends wepy.page {
   async onGotUserInfo(e) {
     console.log(e)
     if (e.detail.errMsg === 'getUserInfo:ok') {
+      tip.loading()
       let res = await wepy.login()
+      tip.loaded()
       console.log(res)
       if (res.code) {
         wepy.setStorageSync(USER_INFO, e.detail.userInfo)
@@ -78,11 +81,11 @@ export default class Authorize extends wepy.page {
             url: '/pages/home'
           })
         } else {
-          let tip = await wepy.showModal({
+          let model = await wepy.showModal({
             title: '登录结果',
             content: error[result.data.message] || '登录失败'
           })
-          if (tip.confirm) {
+          if (model.confirm) {
             wepy.redirectTo({
               url: '/pages/home'
             })
@@ -104,7 +107,7 @@ export default class Authorize extends wepy.page {
     .wh(100%, 100%);
   }
   .logo{
-    .wh(238rpx, 276rpx);
+    .wh(350rpx, 276rpx);
     .f-center;
     top: 30%;
   }

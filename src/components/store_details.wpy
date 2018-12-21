@@ -1,0 +1,219 @@
+<template>
+  <cover-view class="store_details" @tap="goDetails">
+    <cover-view class="top">
+      <cover-view class="pic">
+        <cover-image src="../images/details.png"/>
+      </cover-view>
+      <cover-view class="list">
+        <cover-view class="li">{{detailData.name}}</cover-view>
+        <cover-view class="li">
+          <cover-image src="../images/add.png"/>
+          <cover-view class="text">{{detailData.openTime}}</cover-view>
+        </cover-view>
+        <cover-view class="li">
+          <cover-image src="../images/time.png"/>
+          <cover-view class="text">{{detailData.address}}</cover-view>
+        </cover-view>
+        <cover-view class="nav" catchtap="openLocation">
+          <cover-image src="../images/nav.png"/>
+          <cover-view class="text">导航</cover-view>
+        </cover-view>
+      </cover-view>
+    </cover-view>
+    <cover-view class="bottom">
+      <cover-view class="top-line"></cover-view>
+      <cover-view class="power" wx:if="{{detailData.type===2||detailData.type===3}}">
+        <cover-image src="../images/chargerIcon.png"/>
+        <cover-view class="text">提供座充</cover-view>
+        <cover-view class="line"></cover-view>
+      </cover-view>
+      <cover-view class="charger" wx:if="{{detailData.type===1||detailData.type===3}}">
+        <cover-image src="../images/babyIcon.png"/>
+        <cover-view class="borrow">可借{{detailData.fullyCount}}台</cover-view>
+        <cover-view class="return">可还{{detailData.vacancyCount}}台</cover-view>
+      </cover-view>
+    </cover-view>
+  </cover-view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { connect } from 'wepy-redux'
+
+@connect({
+  location(state) {
+    return state.counter.location
+  }
+})
+export default class StoreDetails extends wepy.component {
+  props = {
+    detailData: {
+      default: {},
+      type: Object
+    }
+  }
+  data = {}
+  methods = {
+    goDetails() {
+      wepy.navigateTo({
+        url: '/pages/details?item=' + JSON.stringify(this.detailData)
+      })
+    },
+    openLocation() {
+      // console.log('----------')
+      // console.log(this.location)
+      wx.openLocation({
+        latitude: this.location.lat,
+        longitude: this.location.lng,
+        scale: 16,
+        name: this.detailData.name,
+        address: this.detailData.address
+      })
+    }
+  }
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.store_details{
+  .wh(690rpx, 260rpx);
+  background-color: #fff;
+  border-radius: 10rpx;
+  display: flex;
+  flex-direction: column;
+  padding: 20rpx 30rpx;
+  box-sizing: border-box;
+  position: relative;
+  .top{
+    flex: 2;
+    display: flex;
+    flex-direction: row;
+    .pic{
+      flex: 1;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      cover-image{
+        .wh(120rpx, 120rpx);
+        background-color: #666;
+        border-radius: 8rpx;
+      }
+    }
+    .list{
+      flex: 3.2;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      .li{
+        flex: 1;
+        display: flex;
+        flex-direction: row;
+      }
+      .li:nth-child(1) {
+        flex: 1.3;
+        font-size: 34rpx;
+        font-weight: bold;
+        padding-left: 4rpx;
+        box-sizing: border-box;
+      }
+      .li:nth-child(2) {
+        font-size: 28rpx;
+        color: #ADADAD;
+        cover-image{
+          .wh(24rpx, 36rpx);
+          margin: 0 20rpx 0 4rpx;
+        }
+      }
+      .li:nth-child(3) {
+        font-size: 28rpx;
+        color: #ADADAD;
+        display: flex;
+        cover-image{
+          .wh(32rpx, 32rpx);
+          margin: 0 16rpx 0 0rpx;
+        }
+        .text{
+          flex: 1;
+          width: 0;
+          padding-right: 100rpx;
+          .text-over;
+        }
+      }
+      .nav{
+        .wh(100rpx, 100rpx);
+        background-color: #F5D822;
+        position: absolute;
+        top: 50%;
+        right: 10rpx;
+        transform: translateY(-50%);
+        border-radius: 50%;
+        cover-image{
+          .wh(80%, 80%);
+          margin: 0 auto;
+        }
+        .text{
+          font-size: 22rpx;
+          position: absolute;
+          left: 50%;
+          bottom: 14rpx;
+          transform: translateX(-50%);
+          color: #706B51;
+        }
+      }
+    }
+  }
+  .bottom{
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    font-size: 29rpx;
+    position: relative;
+    .top-line{
+      .wh(100%, 1rpx);
+      background-color: rgba(240, 240, 240, .6);
+      position: absolute;
+      left: 0;
+      top: 12rpx;
+    }
+    .power{
+      flex: 1;
+      display: flex;
+      align-items: center;
+      position: relative;
+      margin-right: 40rpx;
+      cover-image{
+        .wh(40rpx, 40rpx);
+        margin-right: 16rpx;
+      }
+      .text{
+        
+      }
+      .line{
+        .wh(4rpx, 36rpx);
+        background-color: rgba(240, 240, 240, 1);
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-60%);
+      }
+    }
+    .charger{
+      flex: 2;
+      display: flex;
+      align-items: center;
+      cover-image{
+        .wh(40rpx, 40rpx);
+        margin-right: 16rpx;
+      }
+      .borrow{
+        margin-right: 20rpx;
+      }
+      .return{
+
+      }
+    }
+  }
+}
+</style>

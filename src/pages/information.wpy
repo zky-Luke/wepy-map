@@ -1,0 +1,52 @@
+<template>
+  <view class="information">
+    <payment title="成功归还充电宝"
+             :paymentData.sync="paymentData">
+    </payment>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import Payment from '../components/common/payment'
+import { millisecondToDate } from '../utils/util.js'
+
+export default class Information extends wepy.page {
+  config = {
+    navigationBarTitleText: '还入成功'
+  }
+  components = {
+    payment: Payment
+  }
+  data = {
+    paymentData: []
+  }
+  async onLoad(options) {
+    console.log(options)
+    let data = JSON.parse(options.data)
+    let time = data.returnTime - data.lentTime
+    this.paymentData = [
+      {
+        describe: '消费',
+        unit: '（元）',
+        value: data.fee / 100 + '元'
+      },
+      {
+        describe: '租用时长',
+        value: millisecondToDate(time, 'dd天hh小时mm分钟')
+      },
+      {
+        describe: '店铺位置',
+        value: data.returnMerchantName
+      }
+    ]
+  }
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.information{
+  .wh(100%, 100%);
+}
+</style>

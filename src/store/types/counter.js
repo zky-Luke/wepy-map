@@ -8,8 +8,8 @@ export const ASYNC_INCREMENT = 'ASYNC_INCREMENT'
 export const ASSIGNMENT_MAP_CTX = 'ASSIGNMENT_MAP_CTX'
 
 /**
- * 支付类
+ * 当前点击商铺位置detailLocation
  * @const  {string}
  */
 
-export const WECHART_PAY = 'WECHART_PAY'
+export const STORE_LOCATION = 'STORE_LOCATION'

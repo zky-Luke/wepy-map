@@ -15,10 +15,10 @@ setStore(store)
 export default class extends wepy.app {
   config = {
     pages: [
-      // 'pages/authorize',
-      // 'pages/home',
-      // 'pages/user',
-      // 'pages/wallet',
+      'pages/authorize',
+      'pages/home',
+      'pages/user',
+      'pages/wallet',
       'pages/recharge',
       'pages/deposit',
       'pages/transaction',
@@ -26,7 +26,9 @@ export default class extends wepy.app {
       'pages/order',
       'pages/aboutUs',
       'pages/storeList',
-      'pages/details'
+      'pages/details',
+      'pages/information',
+      'pages/bill'
     ],
     window: {
       backgroundTextStyle: 'dark',

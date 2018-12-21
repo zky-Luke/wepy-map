@@ -13,12 +13,13 @@
       <text class="text">{{deposit === '0' ? '微信支付' : '微信账号'}}</text>
       <icon class="icon" type="success" size="40rpx" color="#0ABA07" />
     </view>
-    <view class="button">{{deposit === '0' ? '交押金' : '退押金'}}</view>
+    <view class="button" @tap="depositHandle">{{deposit === '0' ? '确认支付' : '退押金'}}</view>
   </view>
 </template>
 
 <script>
 import wepy from 'wepy'
+import { WePay } from '@/utils/wepay.js'
 
 export default class Deposit extends wepy.page {
   config = {
@@ -31,6 +32,19 @@ export default class Deposit extends wepy.page {
     console.log(options)
     this.deposit = options.deposit
   }
+  methods = {
+    depositHandle() {
+      if (this.deposit === '0') {
+        WePay({
+          fee: 99 * 100,
+          type: 1,
+          success: (res) => {
+            console.log(res)
+          }
+        })
+      }
+    }
+  }
 }
 </script>
 
@@ -41,6 +55,7 @@ export default class Deposit extends wepy.page {
   padding-top: 4%;
   background-color: #F7F7F7;
   position: relative;
+  box-sizing: border-box;
   .top{
     .wh(700rpx, 300rpx);
     margin: 0 auto;

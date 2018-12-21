@@ -14,3 +14,6 @@ export const USER_SPECICAL_INFO = 'userSpecicalInfo'
 
 // 亓行appId
 export const QIXING_APPID = 'qxbd5626f6c793e608'
+
+// 余额
+export const BALANCE = 'BALANCE'

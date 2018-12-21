@@ -1,9 +1,10 @@
 import { handleActions } from 'redux-actions'
-import { ASYNC_INCREMENT, WECHART_PAY } from '../types/counter'
+import { ASYNC_INCREMENT, STORE_LOCATION } from '../types/counter'
 
 const stateData = {
   num: 0,
-  asyncNum: 0
+  asyncNum: 0,
+  location: {}
 }
 
 export default handleActions({
@@ -14,10 +15,10 @@ export default handleActions({
       asyncNum: state.asyncNum + action.payload
     }
   },
-  [WECHART_PAY] (state, action) {
+  [STORE_LOCATION] (state, action) {
     return {
       ...state,
-      asyncNum: state.asyncNum + action.payload
+      location: action.payload
     }
   }
 }, stateData)

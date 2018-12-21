@@ -1,66 +1,217 @@
 <template>
   <view class="transaction">
-    <view class="list">
-      <view class="li">
+    <scroll-view class="list"
+                 croll-y="true"
+                 enable-back-to-top="true">
+      <view class="nav">
+        <view class="{{active===1?'active':''}} item" @tap="selectItem(1)">充值</view>
+        <view class="{{active===2?'active':''}} item" @tap="selectItem(2)">消费</view>
+        <view class="{{active===3?'active':''}} item" @tap="selectItem(3)">提现</view>
+      </view>
+      <!-- 充值 -->
+      <view class="li"
+            wx:for="{{listData.recharge}}"
+            wx:key="item"
+            wx:if="{{active===1}}">
         <view class="left">
           <view class="describe">
-            <text class="text">座充</text>          
-            <text class="pay">付款成功</text>          
+            <text class="text">{{item.recharge_type===1?'余额':'押金'}}</text>          
+            <text class="pay" wx:if="{{item.result==='SUCCESS'}}">充值成功</text>
+            <text class="pay" wx:if="{{item.result==='SHIPPED'}}">未支付</text>
+            <text class="pay" wx:if="{{item.result==='FAIL'}}">充值失败</text>
           </view>
-          <view class="date">2017.05.09 20:34</view>
-        </view>        
+          <wxs src="../wxs/unit.wxs" module="unit"/>
+          <view class="date">{{unit.formattingTime(item.time_end)}}</view>
+        </view>
         <view class="right">
           <view class="money">
-            <text class="number">-6</text>          
+            <text class="number">{{item.fee / 100}}</text>
             <text class="unit">元</text>   
           </view>
-          <text class="payType">微信支付</text>
-        </view>        
+          <text class="payType" wx:if="{{item.result!=='SHIPPED'}}">{{item.pay_type===1?'微信支付':'支付宝支付'}}</text>
+        </view>
       </view>
-      <view class="li">
+      <!-- 消费 -->
+      <view class="li"
+            wx:for="{{listData.consumption}}"
+            wx:key="item"
+            wx:if="{{active===2}}">
         <view class="left">
           <view class="describe">
-            <text class="text">座充</text>          
-            <text class="pay">付款成功</text>          
+            <text class="text">{{item.charging_type===1?'充电宝':'座充'}}</text>          
+            <text class="pay" wx:if="{{item.result==='SUCCESS'}}">支付成功</text>
+            <text class="pay" wx:if="{{item.result==='SHIPPED'}}">未支付</text>
+            <text class="pay" wx:if="{{item.result==='FAIL'}}">支付失败</text>
           </view>
-          <view class="date">2017.05.09 20:34</view>
-        </view>        
+          <wxs src="../wxs/unit.wxs" module="unit"/>
+          <view class="date">{{unit.formattingTime(item.time_end)}}</view>
+        </view>
         <view class="right">
           <view class="money">
-            <text class="number">-6</text>          
+            <text class="number">{{item.fee / 100}}</text>
             <text class="unit">元</text>   
           </view>
-          <text class="payType">微信支付</text>
-        </view>        
+          <text class="payType" wx:if="{{item.result!=='SHIPPED'}}">{{item.pay_type===1?'微信支付':'支付宝支付'}}</text>
+        </view>
       </view>
-      <view class="li">
+      <!-- 提现 -->
+      <view class="li"
+            wx:for="{{listData.withdraw}}"
+            wx:key="item"
+            wx:if="{{active===3}}">
         <view class="left">
           <view class="describe">
-            <text class="text">座充</text>          
-            <text class="pay">付款成功</text>          
+            <text class="text">提现</text>          
+            <text class="pay" wx:if="{{item.result==='SUCCESS'}}">提现成功</text>
+            <text class="pay" wx:if="{{item.result==='FAIL'}}">提现失败</text>         
           </view>
-          <view class="date">2017.05.09 20:34</view>
-        </view>        
+          <wxs src="../wxs/unit.wxs" module="unit"/>
+          <view class="date">{{unit.formattingTime(item.time_end)}}</view>
+        </view>
         <view class="right">
           <view class="money">
-            <text class="number">-6</text>          
+            <text class="number">{{item.fee}}</text>
             <text class="unit">元</text>   
           </view>
-          <text class="payType">微信支付</text>
-        </view>        
+          <text class="payType">{{item.pay_type===1?'微信账号':'支付宝账号'}}</text>
+        </view>
       </view>
-    </view>
+      <view class="nothing" wx:if="{{(listData.recharge.length===0&&active===1) || (listData.consumption.length===0&&active===2) || (listData.withdraw.length===0&&active===3)}}">
+        <image src="../images/nothing.png" mode="aspectFit"/>
+        <view>暂无任何交易记录</view>
+      </view>
+    </scroll-view>
   </view>
 </template>
 
 <script>
 import wepy from 'wepy'
+import api from '@/api/api'
+import tip from '@/utils/tip.js'
+import { USER_SPECICAL_INFO } from '@/utils/constant.js'
 
 export default class Transaction extends wepy.page {
   config = {
-    navigationBarTitleText: '交易明细'
+    navigationBarTitleText: '交易明细',
+    enablePullDownRefresh: true,
+    backgroundColor: '#F7F7F7'
   }
-  data = {}
+  data = {
+    listData: {
+      recharge: [
+        // {
+        //   fee: 9900,
+        //   pay_type: 1,
+        //   recharge_type: 1,
+        //   result: 'SHIPPED',
+        //   time_end: '20181218153200'
+        // }
+      ],
+      consumption: [
+        // {
+        //   charging_type: 1,
+        //   result: 'SUCCESS',
+        //   fee: 1,
+        //   pay_type: 2,
+        //   time_end: '20181218153200'
+        // }
+      ],
+      withdraw: [
+        // {
+        //   result: 'SUCCESS',
+        //   fee: 1,
+        //   pay_type: 2,
+        //   time_end: '20181218153200'
+        // }
+      ]
+    },
+    active: 1,
+    page: 1,
+    refresh: false, // 刷新状态
+    refreshEnd: false // 已加载全部
+  }
+  async onLoad() {
+    this.transactionHandle(this.active, this.page)
+  }
+  methods = {
+    selectItem(i) {
+      this.active = parseInt(i)
+      this.page = 1
+      this.transactionHandle(this.active, this.page)
+    }
+  }
+  // 交易记录请求
+  async transactionHandle(type, page) {
+    // 更新刷新状态
+    if (this.refresh) {
+      this.refresh = false
+      wx.stopPullDownRefresh()
+    }
+    let user = wepy.getStorageSync(USER_SPECICAL_INFO)
+    let res = await api.TransactionDetails({
+      query: {
+        transactionType: type,
+        userId: user.userid,
+        page: page,
+        count: 10
+      }
+    })
+    console.log(res)
+    if (res.data.status === 200) {
+      if (res.data.data.length === 0) {
+        this.refreshEnd = true
+      } else {
+        this.refreshEnd = false
+      }
+      switch (this.active) {
+        case 1:
+          if (page === 1) {
+            this.listData.recharge = res.data.data
+          } else {
+            res.data.data.map(i => {
+              this.listData.recharge.push(i)
+            })
+          }
+          break
+        case 2:
+          if (page === 1) {
+            this.listData.consumption = res.data.data
+          } else {
+            res.data.data.map(i => {
+              this.listData.consumption.push(i)
+            })
+          }
+          break
+        case 3:
+          if (page === 1) {
+            this.listData.withdraw = res.data.data
+          } else {
+            res.data.data.map(i => {
+              this.listData.withdraw.push(i)
+            })
+          }
+          break
+      }
+      this.$apply()
+    } else {
+      tip.showModal('提示', res.data.data.errmsg)
+    }
+  }
+  // 下拉刷新
+  onPullDownRefresh() {
+    this.refresh = true
+    this.page = 1
+    this.transactionHandle(this.active, this.page)
+    console.log('onPullDownRefresh')
+  }
+  // 上拉加载
+  onReachBottom() {
+    if (!this.refreshEnd) {
+      this.refresh = true
+      this.transactionHandle(this.active, ++this.page)
+      console.log('onReachBottom')
+    }
+  }
 }
 </script>
 
@@ -72,17 +223,46 @@ export default class Transaction extends wepy.page {
   position: relative;
   .list{
     .wh(100%, auto);
-    padding: 4% 5%;
+    padding: 80rpx 0;
     box-sizing: border-box;
+    background-color: #F7F7F7;
+    .nav{
+      .wh-l(100%, 80rpx);
+      background-color: #FFF;
+      display: flex;
+      position: fixed;
+      left: 0;
+      top: 0;
+      .item{
+        flex: 1;
+        text-align: center;
+        font-size: 29rpx;
+      }
+    }
+    .active{
+      color: #F4DA21;
+      position: relative;
+      &::after{
+        content: '';
+        display: block;
+        .wh(40rpx, 5rpx);
+        background-color: #F4DA21;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 9rpx;
+        border-radius: 2rpx;
+      }
+    }
     .li{
-      .wh(100%, 160rpx);
+      .wh(90%, 160rpx);
       background-color: #fff;
       border-radius: 20rpx;
       padding: 26rpx 30rpx;
       box-sizing: border-box;
       box-shadow: 0 0 40rpx rgba(0, 0, 0, 0.1);
       display: flex;
-      margin-bottom: 26rpx;
+      margin: 26rpx auto 0 auto;
       .left{
         flex: 3;
         display: flex;
@@ -105,7 +285,7 @@ export default class Transaction extends wepy.page {
         flex: 1;
         display: flex;
         flex-direction: column;
-        justify-content: flex-end;
+        // justify-content: flex-end;
         text-align: right;
         .money{
           display: flex;
@@ -114,17 +294,31 @@ export default class Transaction extends wepy.page {
           color: #FF2C2C;
           .number{
             font-size: 60rpx;
-            margin-right: 20rpx;
+            margin-right: 10rpx;
           }
           .unit{
             font-size: 32rpx;
           }
         }
         .payType{
-          font-size: 28rpx;
+          font-size: 24rpx;
           color: #999;
           margin-top: 20rpx;
         }
+      }
+    }
+    .li:last-child{
+      margin-bottom: 26rpx;
+    }
+    .nothing{
+      .wh(300rpx, 300rpx);
+      font-size: 34rpx;
+      text-align: center;
+      color: #818181;
+      margin: 30% auto 0 auto;
+      image{
+        .wh(200rpx, 200rpx);
+        margin: 0 auto;
       }
     }
   }

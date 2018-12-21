@@ -32,6 +32,32 @@ function getCurrentTime() {
   return keep // 20160614134947
 }
 
-module.exports = {
-  getCurrentTime: getCurrentTime
+/**
+ * 毫秒值转指定日期格式
+ * @method millisecondToDate
+ */
+
+function millisecondToDate(time, format) {
+  let total = Math.ceil(time / 1000)
+  let day = Math.floor(total / (24 * 60 * 60))
+  let hour = Math.floor((total % (24 * 60 * 60)) / (60 * 60))
+  let minute = Math.floor(((total % (24 * 60 * 60)) % (60 * 60)) / 60)
+  let second = Math.floor(((total % (24 * 60 * 60)) % (60 * 60)) % 60)
+  return format.replace(/dd|hh|mm|ss/g, function(a) {
+    switch (a) {
+      case 'dd':
+        return day
+      case 'hh':
+        return hour
+      case 'mm':
+        return minute
+      case 'ss':
+        return second
+    }
+  })
+}
+
+export {
+  getCurrentTime,
+  millisecondToDate
 }

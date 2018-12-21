@@ -8,7 +8,9 @@ import tip from './tip'
 // const SIGN = md5.hex_md5((TIMESTAMP + API_SECRET_KEY).toLowerCase())
 
 const wxRequest = async(params = {}, url) => {
-  tip.loading()
+  if (!params.disableLoad) {
+    tip.loading(params.loadText)
+  }
   let data = params.query || {}
     // data.sign = SIGN
     // data.time = TIMESTAMP

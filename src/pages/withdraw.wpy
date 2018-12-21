@@ -13,7 +13,7 @@
       <text class="text">微信账号</text>
       <icon class="icon" type="success" size="40rpx" color="#0ABA07" />
     </view>
-    <view class="button">确认提现</view>
+    <view class="button" @tap="withdrawHandle">确认提现</view>
   </view>
 </template>
 
@@ -30,6 +30,15 @@ export default class Withdraw extends wepy.page {
   async onLoad(options) {
     this.amount = options.amount
   }
+  methods = {
+    withdrawHandle() {
+      wx.showModal({
+        title: '提示',
+        content: '待开发...',
+        showCancel: false
+      })
+    }
+  }
 }
 </script>
 
@@ -40,6 +49,7 @@ export default class Withdraw extends wepy.page {
   padding-top: 4%;
   background-color: #F7F7F7;
   position: relative;
+  box-sizing: border-box;
   .top{
     .wh(700rpx, 300rpx);
     margin: 0 auto;

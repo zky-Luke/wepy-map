@@ -15,9 +15,10 @@
 
 <script>
 import wepy from 'wepy'
-// import { USER_SPECICAL_INFO, QIXING_APPID } from '../utils/constant.js'
-// import api from '@/api/api'
+import api from '@/api/api'
+import tip from '@/utils/tip.js'
 import { WePay } from '../utils/wepay.js'
+import { USER_SPECICAL_INFO, BALANCE } from '../utils/constant.js'
 
 export default class Recharge extends wepy.page {
   config = {
@@ -55,8 +56,32 @@ export default class Recharge extends wepy.page {
       WePay({
         fee: this.selectAmount * 100,
         type: 1,
-        fun: (res) => {
-          console.log(res)
+        success: async (res) => {
+          let modal = await wepy.showModal({
+            title: '提示',
+            content: '充值成功',
+            showCancel: false
+          })
+          if (modal.confirm) {
+            // 查询余额
+            let user = wepy.getStorageSync(USER_SPECICAL_INFO)
+            let result = await api.GetBalanceAndDeposit({
+              query: {
+                userId: user.userid
+              }
+            })
+            if (result.data.status === 200) {
+              wepy.setStorageSync(BALANCE, result.data.data.amount)
+              console.log(result.data.data.amount)
+              setTimeout(() => {
+                wx.navigateBack({
+                  delta: 1
+                })
+              }, 500)
+            } else {
+              tip.showModal('提示', result.data.data.errmsg)
+            }
+          }
         }
       })
     }
@@ -69,6 +94,7 @@ export default class Recharge extends wepy.page {
 .recharge{
   .wh(100%, 100%);
   padding-top: 5%;
+  box-sizing: border-box;
   .text{
     .wh-l(400rpx, 50rpx);
     margin: 0 auto;

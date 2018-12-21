@@ -6,26 +6,27 @@
         <view class="item">
           <image src="../images/time-icon.png"  mode="aspectFit"/>
           <view>营业时间</view>
-          <text>10:00-23:00</text>
+          <text>{{detailData.openTime}}</text>
         </view>
         <view class="item">
           <image src="../images/user.png"  mode="aspectFit"/>
           <view>人均消费</view>
-          <text>￥50</text>
+          <text>￥{{detailData.consumption}}</text>
         </view>
         <view class="item">
           <image src="../images/add-icon.png"  mode="aspectFit"/>
           <view>店铺地址</view>
-          <text>中山大道棠下</text>
+          <text>{{detailData.address}}</text>
         </view>
       </view>
-      <view class="right">
+      <view class="right" @tap="location">
         <image src="../images/nav.png"  mode="aspectFit"/>
-        <text>110米</text>
+        <wxs src="../wxs/unit.wxs" module="unit" />
+        <text>{{unit.mToKm(detailData.distance)}}</text>
       </view>
     </view>
     <view class="charger">
-      <view class="scan">
+      <view class="scan" wx:if="{{detailData.type===2||detailData.type===3}}">
         <view class="top">
           <text>扫码充电</text>
         </view>
@@ -34,14 +35,14 @@
           <text>提供座充</text>
         </view>
       </view>
-      <view class="power">
+      <view class="power" wx:if="{{detailData.type===1||detailData.type===3}}">
         <view class="top">
           <text>租借充电宝</text>
         </view>
         <view class="bottom">
           <image src="../images/babyIcon.png"  mode="aspectFit"/>
-          <text>可借3台</text>
-          <text>可还3台</text>
+          <text>可借{{detailData.fullyCount}}台</text>
+          <text>可还{{detailData.vacancyCount}}台</text>
         </view>
       </view>
     </view>
@@ -55,7 +56,25 @@ export default class Details extends wepy.page {
   config = {
     navigationBarTitleText: '店铺详情'
   }
-  data = {}
+  data = {
+    detailData: {}
+  }
+  onLoad(options) {
+    console.log(JSON.parse(options.item))
+    this.detailData = JSON.parse(options.item)
+  }
+  methods = {
+    location() {
+      // console.log(123)
+      wx.openLocation({
+        latitude: this.detailData.lat,
+        longitude: this.detailData.lng,
+        scale: 16,
+        name: this.detailData.name,
+        address: this.detailData.address
+      })
+    }
+  }
 }
 </script>
 
@@ -84,9 +103,13 @@ export default class Details extends wepy.page {
         font-size: 30rpx;
         display: flex;
         flex-direction: row;
-        align-items: center;
+        align-items: baseline;
+        padding-top: 20rpx;
+        box-sizing: border-box;
         image{
           .wh(34rpx, 34rpx);
+          position: relative;
+          top: 8rpx;
         }
         view{
           color: #585858;
@@ -94,6 +117,10 @@ export default class Details extends wepy.page {
         }
         text{
           color: #ABABAB;
+          flex: 1;
+          width: 0;
+          text-align: left;
+          .text-over;
         }
       }
     }

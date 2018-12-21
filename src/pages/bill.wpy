@@ -1,0 +1,182 @@
+<template>
+  <view class="bill">
+    <view class="top">
+      <image src="../images/bg2.png" mode="aspectFit"/>
+      <view class="money">
+        <text class="number">{{bill / 100}}</text>
+        <text class="unit">元</text>
+      </view>
+      <text class="text">待支付</text>
+    </view>
+    <view class="wepay" @tap="payHandle(1)">
+      <image src="../images/wechat.png" mode="aspectFit"/>
+      <text class="text">微信支付</text>
+      <view class="icon">
+        <icon wx:if="{{active===1}}" type="success" size="40rpx" color="#0ABA07" />
+      </view>
+    </view>
+    <view class="wepay" @tap="payHandle(2)">
+      <image src="../images/rmb.png" mode="aspectFit"/>
+      <text class="text">余额支付</text>
+      <view class="icon">
+        <icon wx:if="{{active===2}}" type="success" size="40rpx" color="#0ABA07" />
+      </view>
+    </view>
+    <view class="button" @tap="depositHandle">确认支付</view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+import { WePay } from '@/utils/wepay.js'
+import api from '@/api/api'
+import tip from '@/utils/tip.js'
+
+export default class Bill extends wepy.page {
+  config = {
+    navigationBarTitleText: '账单'
+  }
+  data = {
+    bill: 0,
+    no: '',
+    active: 1
+  }
+  async onLoad(options) {
+    console.log(options)
+    this.bill = options.fee
+    this.no = options.no
+  }
+  methods = {
+    payHandle(num) {
+      this.active = parseInt(num)
+    },
+    async depositHandle() {
+      if (this.bill !== 0) {
+        switch (this.active) {
+          // 微信支付
+          case 1:
+            WePay({
+              fee: this.bill,
+              type: 1,
+              success: async (res) => {
+                let modal = await wepy.showModal({
+                  title: '提示',
+                  content: '支付成功',
+                  showCancel: false
+                })
+                if (modal.confirm) {
+                  wepy.reLaunch({
+                    url: '/pages/home'
+                  })
+                }
+              }
+            })
+            break
+          case 2:
+            let res = await api.BalancePaymentOrder({
+              query: {
+                no: this.no
+              }
+            })
+            if (res.data.status === 200) {
+              if (res.data.data.need_pay_fee === 0) {
+                let modal = await wepy.showModal({
+                  title: '提示',
+                  content: '支付成功',
+                  showCancel: false
+                })
+                if (modal.confirm) {
+                  wepy.reLaunch({
+                    url: '/pages/home'
+                  })
+                }
+              } else {
+                tip.showModal('提示', `还需支付${res.data.data.need_pay_fee / 100}元`)
+              }
+            } else {
+              tip.showModal('提示', res.data.data.errmsg)
+            }
+            break
+        }
+      }
+    }
+  }
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.bill{
+  .wh(100%, 100%);
+  padding-top: 4%;
+  background-color: #F7F7F7;
+  position: relative;
+  box-sizing: border-box;
+  .top{
+    .wh(700rpx, 300rpx);
+    margin: 0 auto 30rpx auto;
+    position: relative;
+    image{
+      .wh(100%, 100%);
+    }
+    .money{
+      position: absolute;
+      left: 50%;
+      top: 22%;
+      transform: translateX(-50%);
+      .number{
+        font-size: 66rpx;
+        margin-right: 20rpx;
+      }
+      .unit{
+        font-size: 30rpx;
+      }
+    }
+    .text{
+      position: absolute;
+      left: 50%;
+      top: 58%;
+      transform: translateX(-50%);
+      color: #AAAAAA;
+    }
+  }
+  .wepay{
+    .wh(100%, 80rpx);
+    background-color: #fff;
+    padding: 0 40rpx;
+    display: flex;
+    align-items: center;
+    position: relative;
+    box-sizing: border-box;
+    image{
+      .wh(50rpx, 50rpx);
+      margin-right: 20rpx;
+    }
+    .text{
+      font-size: 32rpx;
+    }
+    .icon{
+      .wh(30rpx, 30rpx);
+      border-radius: 50%;
+      border: 1rpx solid #7a7a7a;
+      position: absolute;
+      top: 50%;
+      right: 40rpx;
+      transform: translateY(-50%);
+      icon{
+        .f-center;
+      }
+    }
+  }
+  .button{
+    .wh-l(90%, 100rpx);
+    background: #F5D822;
+    border-radius: 10rpx;
+    position: absolute;
+    left: 50%;
+    bottom: 7%;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+}
+</style>

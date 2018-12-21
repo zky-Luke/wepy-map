@@ -69,33 +69,9 @@ export default class Order extends wepy.page {
   methods = {
     async paymentOrder(item) {
       console.log(item)
-      let res = await api.BalancePaymentOrder({
-        query: {
-          no: item.no
-        }
+      wepy.navigateTo({
+        url: '/pages/bill?fee=' + item.fee + '&no=' + item.no
       })
-      if (res.data.status === 200) {
-        if (res.data.data.need_pay_fee === 0) {
-          wx.showModal({
-            title: '提示',
-            content: '支付成功',
-            showCancel: false
-          })
-          this.queryOrdersList()
-        } else {
-          wx.showModal({
-            title: '提示',
-            content: `还需支付${res.data.data.need_pay_fee / 100}元`,
-            showCancel: false
-          })
-        }
-      } else {
-        wx.showModal({
-          title: '提示',
-          content: res.data.data.errmsg,
-          showCancel: false
-        })
-      }
     }
   }
   // 查询订单
@@ -121,6 +97,15 @@ export default class Order extends wepy.page {
       this.totalPage = res.data.data.total_page
       if (this.page === 1) {
         this.orderData = res.data.data.orders
+        this.orderData.sort((a, b) => {
+          if (a.pay_state === 2) {
+            return -1
+          } else if (a.pay_state !== 2) {
+            return 1
+          } else {
+            return 0
+          }
+        })
       } else {
         this.orderData.push(res.data.data.orders)
       }

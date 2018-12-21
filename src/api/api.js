@@ -4,13 +4,13 @@ import {
 
 const apiUser = 'https://bs.startai.cn'
 const apiCharger = 'https://share.startai.cn/shared-power-bank-h5'
-// const apiCharger = 'http://39.107.104.221:8081/shared-power-bank-h5'
 // const apiUser = 'http://192.168.11.148:9001'
+// const apiCharger = 'http://39.107.104.221:8081/shared-power-bank-h5'
 // const apiCharger = 'http://192.168.11.115:8081'
 
 /**
- * LOGIN
- * 登录
+ * USER
+ * 用户业务
  */
 
 // 获取用户验证信息
@@ -21,7 +21,7 @@ const WechatPay = (params) => wxRequest(params, apiUser + '/pay/v1.0/wechat_mini
 
 /**
  * BATTERY
- * 充电宝租借
+ * 充电宝业务
  */
 
 // 借出充电宝
@@ -39,12 +39,32 @@ const BalancePaymentOrder = (params) => wxRequest(params, apiCharger + '/payByBa
 // 其他支付
 const OtherPayOrder = (params) => wxRequest(params, apiCharger + '/payOrder')
 
+// 附近店铺
+const NearbyStore = (params) => wxRequest(params, apiCharger + '/getLocation')
+
+// 查询店铺详情
+const MerchatDetails = (params) => wxRequest(params, apiCharger + '/getMerchatDetails')
+
+// 店铺分类
+const MechantClassification = (params) => wxRequest(params, apiCharger + '/getMechantClassification')
+
+// 查看明细
+const TransactionDetails = (params) => wxRequest(params, apiCharger + '/getTransactionDetails')
+
+// 查询是否有借出单
+const UserHasLend = (params) => wxRequest(params, apiCharger + '/getUserHasLend')
+
 export default {
   GetUserSpecicalInfo,
+  WechatPay,
   LendPortableBattery,
   GetBalanceAndDeposit,
   QueryOrdersList,
   BalancePaymentOrder,
   OtherPayOrder,
-  WechatPay
+  NearbyStore,
+  MerchatDetails,
+  MechantClassification,
+  TransactionDetails,
+  UserHasLend
 }

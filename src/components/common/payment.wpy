@@ -1,0 +1,106 @@
+<template>
+  <view class="payment">
+    <image src="../../images/succeed.png" mode="aspectFit"/>
+    <text class="title">{{title}}</text>
+    <view class="list">
+      <view class="li" wx:for="{{paymentData}}" wx:key="item">
+        <view class="left">
+          {{item.describe}}
+          <view class="unit" wx:if="{{item.unit}}">{{item.unit}}</view>
+        </view>
+        <view class="right">{{item.value}}</view>
+      </view>
+    </view>
+    <view class="button" @tap="completeHandle">{{complete}}</view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class Payment extends wepy.component {
+  props = {
+    title: {
+      default: '操作成功',
+      type: String
+    },
+    complete: {
+      default: '完成',
+      type: String
+    },
+    paymentData: {
+      default: [],
+      type: Array
+    }
+  }
+  data = {}
+  methods = {
+    completeHandle () {
+      wx.navigateBack({
+        delta: 1
+      })
+      this.$emit('completeHandle')
+    }
+  }
+}
+</script>
+
+<style lang="less">
+@import '../../styles/mixin.less';
+.payment{
+  .wh(100%, 100%);
+  font-size: 32rpx;
+  color: #717171;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  image{
+    .wh(200rpx, 200rpx);
+    margin: 80rpx auto 50rpx auto;
+  }
+  .title{
+    margin: 0 auto;
+  }
+  .list{
+    .wh(100%, auto);
+    margin-top: 70rpx;
+    .li{
+      .wh(100%, 100rpx);
+      padding: 0 40rpx;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      border-bottom: .5rpx solid #F3F3F3;
+      .left{
+        flex: 1;
+        text-align: left;
+        display: flex;
+        flex-direction: row;
+        align-items: baseline;
+        .unit{
+          font-size: 28rpx;
+        }
+      }
+      .right{
+        flex: 1;
+        text-align: right;
+        font-size: 28rpx;
+        color: #ADADAD;
+      }
+    }
+    .li:first-child{
+      border-top: .5rpx solid #F3F3F3;
+    }
+  }
+  .button{
+    .wh-l(90%, 100rpx);
+    background: #F5D822;
+    border-radius: 10rpx;
+    position: absolute;
+    left: 50%;
+    bottom: 7%;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+}
+</style>

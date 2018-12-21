@@ -6,7 +6,7 @@
 export default class Tips {
   constructor() {
     this.isLoading = false
-    this.timeout = 30000
+    this.timeout = 40000
     this.timer = ''
   }
 
@@ -38,6 +38,15 @@ export default class Tips {
       Tips.isLoading = false
       wx.hideLoading()
     }
+  }
+
+  // 提示框
+  static showModal(title, res) {
+    wx.showModal({
+      title: title,
+      content: res,
+      showCancel: false
+    })
   }
 }
 

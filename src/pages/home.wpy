@@ -9,6 +9,8 @@
         scale="{{scale}}"
         show-location
         bindregionchange="regionchange"
+        bindmarkertap="markertap"
+        bindtap="maptap"
       >
         <cover-view class="header">
           <cover-view class="left" @tap="goToUser">
@@ -42,6 +44,11 @@
             </cover-view>
           </cover-view>
         </cover-view>
+        <!-- 店铺详情 -->
+        <storeDetails class="details"
+                      wx:if="{{storeShow}}"
+                      :detailData.sync="detailData">
+        </storeDetails>
       </map>
     </view>
   </view>
@@ -52,11 +59,16 @@ import wepy from 'wepy'
 import { USER_INFO, USER_SPECICAL_INFO } from '../utils/constant.js'
 import { connect, getStore } from 'wepy-redux'
 import api from '@/api/api'
+import tip from '@/utils/tip.js'
+import storeDetails from '../components/store_details'
 
 const store = getStore()
 @connect({
   mapCtx(state) {
     return state.map.mapCtx
+  },
+  location(state) {
+    return state.counter.location
   }
 })
 export default class Index extends wepy.page {
@@ -74,7 +86,7 @@ export default class Index extends wepy.page {
       text: '使用方法',
       scheme: ''
     }],
-    scale: 16,
+    scale: 15,
     serviceMask: false,
     // 116.397428, 39.90923
     latitude: 23.099994,
@@ -94,12 +106,18 @@ export default class Index extends wepy.page {
       //   height: 38
       // }
     ],
-    avatar: '' // 头像
+    avatar: '', // 头像
+    storeShow: false,   // 店铺详情显示
+    detailData: {}     // 点击店铺详情
+  }
+  components = {
+    storeDetails: storeDetails
   }
   async onLoad() {
     let userInfo = wepy.getStorageSync(USER_INFO)
     this.avatar = userInfo.avatarUrl
     this._mapInit()
+    this.hasUnpaidOrder()
   }
   methods = {
     // 当前位置
@@ -115,34 +133,64 @@ export default class Index extends wepy.page {
           let user = wepy.getStorageSync(USER_SPECICAL_INFO)
           console.log('user')
           console.log(user)
-          let result = await api.LendPortableBattery({
+          let hasLend = await api.UserHasLend({
             query: {
-              nmsUserId: user.userid,
-              imei: imei
-            }
+              userId: user.userid
+            },
+            disableLoad: true
           })
-          console.log(result)
-          if (result.data.status === 200) {
-            wx.showModal({
-              title: '提示',
-              content: '借出成功',
-              showCancel: false
-            })
+          if (hasLend.data.status === 200) {
+            // 查询借出单
+            let result
+            if (hasLend.data.data.type === 'RETURN') {
+              result = await api.LendPortableBattery({
+                query: {
+                  nmsUserId: user.userid,
+                  imei: imei
+                },
+                loadText: '请放入充电宝...'
+              })
+            } else {
+              result = await api.LendPortableBattery({
+                query: {
+                  nmsUserId: user.userid,
+                  imei: imei
+                },
+                loadText: '弹出后需取出...'
+              })
+            }
+            console.log(result)
+            // 借还充电宝
+            if (result.data.status === 200) {
+              if (result.data.type === 'RETURN') {
+                wepy.navigateTo({
+                  url: '/pages/order'
+                })
+              } else {
+                tip.showModal('提示', '借出成功')
+              }
+            } else {
+              let modal = await wepy.showModal({
+                title: '提示',
+                content: result.data.data.errmsg,
+                showCancel: false
+              })
+              if (modal.confirm) {
+                if (result.data.data.errcode === '20303') {
+                  wepy.navigateTo({
+                    url: '/pages/order'
+                  })
+                }
+              }
+            }
           } else {
-            wx.showModal({
-              title: '提示',
-              content: result.data.data.errmsg,
-              showCancel: false
-            })
+            // 查询借出单
+            tip.showModal('提示', hasLend.data.data.errmsg)
           }
         },
         fail (res) {
           console.log(res)
-          wx.showModal({
-            title: '扫码结果',
-            content: res.errMsg,
-            showCancel: false
-          })
+          // tip.showModal('扫码结果', res.errMsg)
         }
       })
     },
@@ -190,11 +238,11 @@ export default class Index extends wepy.page {
     // 商家列表
     goToStoreList () {
       wepy.navigateTo({
-        url: '/pages/storeList'
+        url: '/pages/storeList?lat=' + this.latitude + '&lng=' + this.longitude
       })
     },
     // 拖拽选址
-    regionchange(e) {
+    async regionchange(e) {
       // console.log(e)
       if (e.type === 'end') {
         // 获取地图中心位置
@@ -206,7 +254,116 @@ export default class Index extends wepy.page {
         })
         console.log(this.locationData.latitude)
         console.log(this.locationData.longitude)
+        if (this.locationData.longitude !== 0 && this.locationData.longitude !== 0) {
+          this.nearbyStore()
+        }
       }
+    },
+    // 点击标记点
+    async markertap(e) {
+      // 商铺位置
+      this.markers.map(i => {
+        if (i.id === e.markerId) {
+          store.dispatch({
+            type: 'STORE_LOCATION',
+            payload: {
+              lat: i.latitude,
+              lng: i.longitude
+            }
+          })
+        }
+      })
+      console.log(e)
+      // 商铺详情
+      let res = await api.MerchatDetails({
+        query: {
+          merchantId: e.markerId,
+          lng: this.location.lng,
+          lat: this.location.lat
+        }
+      })
+      console.log(res)
+      if (res.data.status === 200) {
+        this.detailData = res.data.data
+        this.storeShow = true
+        this.$apply()
+      } else {
+        tip.showModal('提示', res.data.data.errmsg)
+      }
+    },
+    // 点击地图
+    maptap(e) {
+      this.storeShow = false
+      this.$apply()
+    }
+  }
+  // 查询是否有未付单
+  async hasUnpaidOrder() {
+    let user = wepy.getStorageSync(USER_SPECICAL_INFO)
+    let res = await api.QueryOrdersList({
+      query: {
+        userId: user.userid,
+        page: 1,
+        count: 10,
+        type: 3
+      }
+    })
+    if (res.data.status === 200) {
+      // res.data.data.total_page
+      console.log(555)
+      console.log(res.data.data.orders)
+      res.data.data.orders.map(i => {
+        if (i.pay_state === 2) {
+          wepy.navigateTo({
+            url: '/pages/order'
+          })
+          return false
+        }
+      })
+    } else {
+      tip.showModal('提示', res.data.data.errmsg)
+    }
+  }
+  // 显示附近商店
+  async nearbyStore() {
+    let res = await api.NearbyStore({
+      query: {
+        lng: this.locationData.longitude,
+        lat: this.locationData.latitude
+      }
+    })
+    console.log(res)
+    if (res.data.status === 200) {
+      this.markers = []
+      res.data.data.map(val => {
+        let icon
+        switch (val.type) {
+          case 1:
+            icon = '../images/baby.png'
+            break
+          case 2:
+            icon = '../images/charger.png'
+            break
+          case 3:
+            icon = '../images/chargerBaby.png'
+            break
+          default:
+            icon = '../images/charger.png'
+            break
+        }
+        this.markers.push({
+          id: val.merchant_id,
+          latitude: val.m_lat,
+          longitude: val.m_lng,
+          iconPath: icon,
+          width: 34.87,
+          height: 38
+        })
+      })
+      console.log(this.markers)
+      this.$apply()
+    } else {
+      tip.showModal('提示', res.data.data.errmsg)
     }
   }
   // 初始化地图
@@ -216,29 +373,13 @@ export default class Index extends wepy.page {
       type: 'ASSIGNMENT_MAP_CTX',
       payload: mapCtx
     })
+    this.mapCtx.moveToLocation()
     wx.getLocation({
       success: res => {
         // console.log(res)
         this.locationData.latitude = res.latitude
         this.locationData.longitude = res.longitude
-        this.mapCtx.moveToLocation()
-
-        // 绘制点（调试）
-        // console.log(res.latitude)
-        // console.log(res.longitude)
-        for (let i = 1; i < 20; i++) {
-          let lat = parseFloat(((0.004 - Math.random() * 0.008) + res.latitude).toFixed(6))
-          let lng = parseFloat(((0.004 - Math.random() * 0.008) + res.longitude).toFixed(6))
-          this.markers.push({
-            id: i,
-            latitude: lat,
-            longitude: lng,
-            name: 'T.I.T 创意园',
-            iconPath: '../images/charger.png',
-            width: 34.87,
-            height: 38
-          })
-        }
+        this.nearbyStore()
         this.$apply()
         // console.log(this.markers)
       },
@@ -386,6 +527,12 @@ export default class Index extends wepy.page {
             }
           }
         }
+      }
+      .details{
+        position: absolute;
+        left: 50%;
+        bottom: 30rpx;
+        transform: translateX(-50%);
       }
     }
   }

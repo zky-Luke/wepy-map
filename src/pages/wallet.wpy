@@ -31,7 +31,7 @@
 
 <script>
 import wepy from 'wepy'
-import { USER_SPECICAL_INFO } from '../utils/constant.js'
+import { USER_SPECICAL_INFO, BALANCE } from '../utils/constant.js'
 import api from '@/api/api'
 
 export default class Wallet extends wepy.page {
@@ -39,10 +39,17 @@ export default class Wallet extends wepy.page {
     navigationBarTitleText: '我的钱包'
   }
   data = {
-    amount: 0,
+    // amount: 0,
     deposit: 0
   }
+  computed = {
+    amount() {
+      return wepy.getStorageSync(BALANCE) || 0
+    }
+  }
   async onLoad () {
+    // this.amount = wepy.getStorageSync(BALANCE)
+    console.log(this.amount)
     // 查询余额
     let user = wepy.getStorageSync(USER_SPECICAL_INFO)
     let res = await api.GetBalanceAndDeposit({
@@ -53,6 +60,7 @@ export default class Wallet extends wepy.page {
     console.log(res)
     if (res.data.status === 200) {
       this.amount = res.data.data.amount
+      wepy.setStorageSync(BALANCE, this.amount)
       this.deposit = res.data.data.deposit
       this.$apply()
     } else {

@@ -29,28 +29,26 @@ const WePay = async(options) => {
         goods_description: res.data.data.orderInfo.body,
         fee_type: res.data.data.orderInfo.fee_type,
         total_fee: res.data.data.orderInfo.total_fee,
-        order_num: res.data.data.orderInfo.out_trade_no
+        order_num: res.data.data.orderInfo.out_trade_no,
+        openid: user.openid
       }
     })
     console.log(result)
     if (result.data.status === 200) {
       wx.requestPayment({
-        timeStamp: result.data.timestamp,
-        nonceStr: result.data.noncestr,
-        package: result.data.package,
-        signType: result.data.signType,
-        paySign: result.data.sign,
+        timeStamp: result.data.data.timeStamp,
+        nonceStr: result.data.data.nonceStr,
+        package: result.data.data.package,
+        signType: result.data.data.signType,
+        paySign: result.data.data.sign,
         success: function (res) {
-          wx.showModal({
-            title: '提示',
-            content: '支付成功',
-            showCancel: false
-          })
+          options.success(res)
         },
         fail: function (res) {
+          console.log(res)
           wx.showModal({
             title: '提示',
-            content: '支付失败',
+            content: res.errMsg,
             showCancel: false
           })
         }
