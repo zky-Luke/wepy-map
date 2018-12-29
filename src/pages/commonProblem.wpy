@@ -1,0 +1,130 @@
+<template>
+  <view class="commonProblem">
+    <view class="list">
+      <view class="li" wx:for="{{listData}}" wx:key="item" @tap="selectHandle({{index}})">
+        <view class="title">{{item.title}}
+          <image wx:if="{{!item.describe}}" src="../images/pulldown.png" mode="aspectFit"/>
+          <image wx:if="{{item.describe}}" src="../images/pullup.png" mode="aspectFit"/>
+        </view>
+        <view class="describe" wx:if="{{item.describe}}">
+          {{item.describeText}}
+        </view>
+      </view>
+    </view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class CommonProblem extends wepy.page {
+  config = {
+    navigationBarTitleText: '常见问题'
+  }
+  data = {
+    listData: [
+      {
+        title: '1、小电充电是否安全？',
+        describe: false,
+        describeText: '桌面式座充设备和移动充电宝的充电线只能传输电力,不支持数据传输,无法获取任何手机信息,100%安全。设备采用安全电流,保障您和您的手机在安全的环境下完成充电过程。'
+      },
+      {
+        title: '2、桌面式座充设备可以同时充几台手机？',
+        describe: false,
+        describeText: '1台设备的最佳充电手机台数为1台,当多台同时充电时会明显降低充电速度。'
+      },
+      {
+        title: '3、如何租借充电宝？',
+        describe: false,
+        describeText: '前往可租借充电宝地点,扫描盒子上的二维码,按提示支付押金后获得借充电宝权限,再按提示确认租借后盒子将弹出1个充电宝,在60秒內取走就完成了租借并开始计费,否则充电宝将被锁定但不会计费。'
+      },
+      {
+        title: '4、如何还充电宝？',
+        describe: false,
+        describeText: '前往可归还地点,扫描盒子上的二维码,将充电宝带指示灯的面朝上,插入充电宝盒子中的任意卡槽,确认充电宝被锁住后即完成归还,打开客户端支付租金后便完成整个流程。'
+      },
+      // {
+      //   title: '5、租借充电宝如何计费？',
+      //   describe: false,
+      //   describeText: '1小时1元,前5分钟免费,每天封顶10元,总封顶99元,计费满99元自动扣取押金。如果有优惠活动则按优惠规则进行减免或赠送。'
+      // },
+      {
+        title: '5、押金是否可退还？',
+        describe: false,
+        describeText: '押金随时退,按原路退回。'
+      },
+      {
+        title: '6、充电宝无法取出？',
+        describe: false,
+        describeText: '请电话联系客服反馈。订单不会立即停止,工作人员最迟将在24小时内处理,如情况属实将不会收取任何费用。'
+      },
+      {
+        title: '7、充电宝无法充电？',
+        describe: false,
+        describeText: '请立即将充电宝插回,租借成功后5分钟内归还将不会收取任何费用。'
+      },
+      {
+        title: '8、充电宝无法归还？',
+        describe: false,
+        describeText: '请立即将充电宝归还至其他插槽或其它商家。如果已归还但订单未结束,工作人员最迟将在24小时内处理,只会按实际使用时长收费。'
+      }
+    ]
+  }
+  methods = {
+    selectHandle(index) {
+      this.listData.map((item, i) => {
+        if (i === index) {
+          item.describe = !item.describe
+        } else {
+          item.describe = false
+        }
+      })
+    }
+  }
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.commonProblem{
+  .wh(100%, 100%);
+  background-color: #F7F7F7;
+  .list{
+    .wh(100%, auto);
+    background-color: #F7F7F7;
+    .li{
+      .wh-l(100%, auto);
+      background-color: #FFF;
+      padding-left: 30rpx;
+      box-sizing: border-box;
+      .title{
+        .wh-l(100%, 80rpx);
+        position: relative;
+        font-size: 30rpx;
+        &::after{
+          content: '';
+          display: flex;
+          .wh(100%, 1rpx);
+          background-color: #F7F7F7;
+        }
+        image{
+          .wh(22rpx, 22rpx);
+          position: absolute;
+          right: 30rpx;
+          top: 50%;
+          transform: translateY(-50%);
+        }
+      }
+      .describe{
+        .wh(100%, auto);
+        padding: 30rpx 30rpx 30rpx 0;
+        box-sizing: border-box;
+        font-size: 29rpx;
+        color: #737373;
+        line-height: 44rpx;
+        margin-bottom: 20rpx;
+      }
+    }
+  }
+}
+</style>

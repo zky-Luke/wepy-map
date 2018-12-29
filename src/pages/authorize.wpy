@@ -13,14 +13,14 @@
 
 <script>
 import wepy from 'wepy'
-import { USER_INFO, USEE_CODE, USER_SPECICAL_INFO, QIXING_APPID } from '../utils/constant.js'
+import { USER_INFO, USEE_CODE, USER_SPECICAL_INFO, HAIBO_APPID, QIXING_APPID, VERSION } from '../utils/constant.js'
 import api from '@/api/api'
 import error from '@/utils/errorCode.js'
 import tip from '@/utils/tip.js'
 
 export default class Authorize extends wepy.page {
   config = {
-    navigationBarTitleText: 'charger'
+    navigationBarTitleText: '海博充电'
   }
   data = {}
   async onLoad() {
@@ -43,7 +43,7 @@ export default class Authorize extends wepy.page {
           wepy.setStorageSync(USEE_CODE, res.code)
           let result = await api.GetUserSpecicalInfo({
             query: {
-              appId: QIXING_APPID,
+              appId: VERSION === 1 ? QIXING_APPID : HAIBO_APPID,
               code: res.code
             }
           })
@@ -70,7 +70,7 @@ export default class Authorize extends wepy.page {
         wepy.setStorageSync(USEE_CODE, res.code)
         let result = await api.GetUserSpecicalInfo({
           query: {
-            appId: QIXING_APPID,
+            appId: VERSION === 1 ? QIXING_APPID : HAIBO_APPID,
             code: res.code
           }
         })

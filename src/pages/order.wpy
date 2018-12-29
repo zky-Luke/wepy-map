@@ -70,7 +70,7 @@ export default class Order extends wepy.page {
     async paymentOrder(item) {
       console.log(item)
       wepy.navigateTo({
-        url: '/pages/bill?fee=' + item.fee + '&no=' + item.no
+        url: '/pages/bill?fee=' + item.fee + '&no=' + item.no + '&page=order'
       })
     }
   }
@@ -92,9 +92,9 @@ export default class Order extends wepy.page {
       }
     })
     console.log(res)
-    console.log(res.data.status)
+    console.log(res.data.data.totalPage)
     if (res.data.status === 200) {
-      this.totalPage = res.data.data.total_page
+      this.totalPage = res.data.data.totalPage
       if (this.page === 1) {
         this.orderData = res.data.data.orders
         this.orderData.sort((a, b) => {
@@ -107,7 +107,9 @@ export default class Order extends wepy.page {
           }
         })
       } else {
-        this.orderData.push(res.data.data.orders)
+        res.data.data.orders.map(i => {
+          this.orderData.push(i)
+        })
       }
       this.$apply()
     } else {
@@ -126,7 +128,8 @@ export default class Order extends wepy.page {
   }
   // 上拉加载
   onReachBottom() {
-    // console.log(this.totalPage > this.page)
+    console.log(this.totalPage)
+    console.log(this.totalPage > this.page)
     if (this.totalPage > this.page) {
       this.refresh = true
       this.page++

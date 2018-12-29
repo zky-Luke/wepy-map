@@ -3,7 +3,7 @@
  * @method WePay
  */
 import wepy from 'wepy'
-import { USER_SPECICAL_INFO, QIXING_APPID } from '@/utils/constant.js'
+import { USER_SPECICAL_INFO, HAIBO_APPID, QIXING_APPID, VERSION } from '@/utils/constant.js'
 import api from '@/api/api'
 
 const WePay = async(options) => {
@@ -25,7 +25,7 @@ const WePay = async(options) => {
       method: 'POST',
       query: {
         userid: user.userid,
-        appid: QIXING_APPID,
+        appid: VERSION === 1 ? QIXING_APPID : HAIBO_APPID,
         goods_description: res.data.data.orderInfo.body,
         fee_type: res.data.data.orderInfo.fee_type,
         total_fee: res.data.data.orderInfo.total_fee,

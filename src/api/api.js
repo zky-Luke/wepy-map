@@ -54,6 +54,18 @@ const TransactionDetails = (params) => wxRequest(params, apiCharger + '/getTrans
 // 查询是否有借出单
 const UserHasLend = (params) => wxRequest(params, apiCharger + '/getUserHasLend')
 
+// 查询充电线计费详情
+const chargingCableBill = (params) => wxRequest(params, apiCharger + '/queryChargingCableBill')
+
+// 充电线下单
+const lineOrder = (params) => wxRequest(params, apiCharger + '/doLineOrder')
+
+// 查询设备类型
+const queryDeviceType = (params) => wxRequest(params, apiCharger + '/queryDeviceType')
+
+// 获取充电线密码
+const getPwd = (params) => wxRequest(params, apiCharger + '/getPwd')
+
 export default {
   GetUserSpecicalInfo,
   WechatPay,
@@ -66,5 +78,9 @@ export default {
   MerchatDetails,
   MechantClassification,
   TransactionDetails,
-  UserHasLend
+  UserHasLend,
+  chargingCableBill,
+  lineOrder,
+  queryDeviceType,
+  getPwd
 }

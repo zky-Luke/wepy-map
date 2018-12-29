@@ -97,6 +97,7 @@ export default class User extends wepy.page {
 .user{
   .wh(100%, 100%);
   background-color: #F4F8FB;
+  overflow: hidden;
   .top{
     .wh(100%, 400rpx);
     background-color: #FFF;

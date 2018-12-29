@@ -3,7 +3,7 @@
     <view class="top">
       <image src="../images/bg2.png" mode="aspectFit"/>
       <view class="money">
-        <text class="number">{{bill / 100}}</text>
+        <text class="number">{{(bill / 100) || 0}}</text>
         <text class="unit">元</text>
       </view>
       <text class="text">待支付</text>
@@ -23,6 +23,15 @@
       </view>
     </view>
     <view class="button" @tap="depositHandle">确认支付</view>
+    <view class="password" wx:if="{{pwdShow}}">
+      <view class="warp">
+        <view class="text">解锁码</view>
+        <view class="pwd">
+          <view class="li" wx:for="{{password}}" wx:key="item">{{item}}</view>
+        </view>
+        <view class="ok" @tap="ok">我知道了</view>
+      </view>
+    </view>
   </view>
 </template>
 
@@ -37,14 +46,18 @@ export default class Bill extends wepy.page {
     navigationBarTitleText: '账单'
   }
   data = {
-    bill: 0,
-    no: '',
-    active: 1
+    bill: 0,    // 金额
+    no: '',     // 订单号
+    page: '',
+    active: 1,
+    password: [0, 0, 0, 0, 0, 0],
+    pwdShow: false
   }
   async onLoad(options) {
     console.log(options)
     this.bill = options.fee
     this.no = options.no
+    this.page = options.page
   }
   methods = {
     payHandle(num) {
@@ -59,20 +72,39 @@ export default class Bill extends wepy.page {
               fee: this.bill,
               type: 1,
               success: async (res) => {
-                let modal = await wepy.showModal({
+                let response1 = await wepy.showModal({
                   title: '提示',
                   content: '支付成功',
                   showCancel: false
                 })
-                if (modal.confirm) {
-                  wepy.reLaunch({
-                    url: '/pages/home'
-                  })
+                if (response1.confirm) {
+                  if (this.page === 'packageMeal') {
+                    // 线充套餐界面
+                    // 获取充电线密码
+                    let response2 = await api.getPwd({
+                      query: {
+                        no: this.no
+                      }
+                    })
+                    if (response2.data.status === 200) {
+                      let password = response2.data.data.pwd
+                      this.password = password.split('')
+                      this.pwdShow = true
+                      this.$apply()
+                    } else {
+                      tip.showModal('提示', response2.data.data.errmsg)
+                    }
+                  } else {
+                    wepy.reLaunch({
+                      url: '/pages/home'
+                    })
+                  }
                 }
               }
             })
             break
           case 2:
+            // 余额支付
             let res = await api.BalancePaymentOrder({
               query: {
                 no: this.no
@@ -80,12 +112,24 @@ export default class Bill extends wepy.page {
             })
             if (res.data.status === 200) {
               if (res.data.data.need_pay_fee === 0) {
-                let modal = await wepy.showModal({
-                  title: '提示',
-                  content: '支付成功',
-                  showCancel: false
-                })
-                if (modal.confirm) {
+                if (this.page === 'packageMeal') {
+                  // 线充套餐界面
+                  // 获取充电线密码
+                  let response2 = await api.getPwd({
+                    query: {
+                      no: this.no
+                    }
+                  })
+                  if (response2.data.status === 200) {
+                    console.log('55555')
+                    let password = response2.data.data.pwd
+                    this.password = password.split('')
+                    this.pwdShow = true
+                    this.$apply()
+                  } else {
+                    tip.showModal('提示', response2.data.data.errmsg)
+                  }
+                } else {
                   wepy.reLaunch({
                     url: '/pages/home'
                   })
@@ -99,6 +143,12 @@ export default class Bill extends wepy.page {
             break
         }
       }
+    },
+    // 点击我知道了按钮
+    ok () {
+      wepy.reLaunch({
+        url: '/pages/home'
+      })
     }
   }
 }
@@ -177,6 +227,48 @@ export default class Bill extends wepy.page {
     bottom: 7%;
     transform: translateX(-50%);
     text-align: center;
+  }
+  .password{
+    .fs;
+    background-color: rgba(0, 0, 0, .8);
+    .warp{
+      .wh(100%, auto);
+      margin-top: 240rpx;
+      color: #FFF;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      .text{
+        font-size: 38rpx;
+      }
+      .pwd{
+        .wh(680rpx, 180rpx);
+        background-color: #fff;
+        margin: 60rpx 0rpx 80rpx 0rpx;
+        padding: 0 20rpx;
+        box-sizing: border-box;
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        .li{
+          .wh-l(90rpx, 120rpx);
+          background-color: #f4c300;
+          border-radius: 10rpx;
+          font-size: 100rpx;
+          color: #0f0f0f;
+          text-align: center;
+        }
+      }
+      .ok{
+        .wh-l(200rpx, 80rpx);
+        font-size: 34rpx;
+        border: 1rpx solid #fff;
+        border-radius: 10rpx;
+        margin: 0 auto;
+        text-align: center;
+      }
+    }
   }
 }
 </style>

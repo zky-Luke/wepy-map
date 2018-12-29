@@ -1,0 +1,99 @@
+<template>
+  <view class="useMethod">
+    <view class="nav">
+      <view class="{{active===1?'active':''}} nav-li" @tap="selectHandle(1)">归还充电宝</view>
+      <view class="{{active===2?'active2':''}} nav-li" @tap="selectHandle(2)">余额提现</view>
+    </view>
+    <scroll-view class="describe"
+                 croll-y="true"
+                 enable-back-to-top="true">
+      <image wx:if="{{active===1}}" src="../images/return.png" mode="widthFix"/>
+      <image wx:if="{{active===2}}" src="../images/balanceWithdrawal.png" mode="widthFix"/>
+    </scroll-view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class UseMethod extends wepy.page {
+  config = {
+    navigationBarTitleText: '使用方法'
+  }
+  data = {
+    active: 1
+  }
+  methods = {
+    selectHandle(num) {
+      num = parseInt(num)
+      this.active = num
+      // switch (num) {
+      //   case 1:
+
+      //     break
+      //   case 2:
+
+      //     break
+      // }
+    }
+  }
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.useMethod{
+  .wh(100%, 100%);
+  .nav{
+    .wh-l(100%, 100rpx);
+    position: fixed;
+    left: 0;
+    top: 0;
+    display: flex;
+    z-index: 10;
+    background-color: #fff;
+    .nav-li{
+      flex: 1;
+      text-align: center;
+      position: relative;
+    }
+    .active{
+      color: #F4DA21;
+      position: relative;
+      &::after{
+        content: '';
+        display: block;
+        .wh(120rpx, 5rpx);
+        background-color: #F4DA21;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 18rpx;
+        border-radius: 2rpx;
+      }
+    }
+    .active2{
+      color: #F4DA21;
+      position: relative;
+      &::after{
+        content: '';
+        display: block;
+        .wh(80rpx, 5rpx);
+        background-color: #F4DA21;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: 18rpx;
+        border-radius: 2rpx;
+      }
+    }
+  }
+  .describe{
+    .wh(100%, auto);
+    margin-top: 100rpx;
+    image{
+      .wh(100%, 100%);
+    }
+  }
+}
+</style>

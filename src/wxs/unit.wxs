@@ -14,7 +14,7 @@ module.exports = {
    */
   formattingTime: function (time) {
     if (time) {
-      time = time.substring(0, 4) + '.' + time.substring(4, 6) + '.' + time.substring(6, 8) + ' ' + time.substring(8, 10) + '.' + time.substring(10, 12)
+      time = time.substring(0, 4) + '.' + time.substring(4, 6) + '.' + time.substring(6, 8) + ' ' + time.substring(8, 10) + ':' + time.substring(10, 12)
     } else {
       time = '0000.00.00 00:00'
     }

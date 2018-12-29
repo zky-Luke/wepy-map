@@ -35,12 +35,26 @@
                     wx:if="{{serviceMask}}"
                     @tap="serviceAlert('0')">
           <cover-view class="alert">
-            <cover-view class="item"
+            <!-- <cover-view class="item"
                         wx:for="{{serviceData}}"
                         wx:key="{{index}}"
                         @tap="itemHandle({{index}})">
               {{item.text}}
               <cover-view class="line" wx:if="{{index !== 2}}"></cover-view>
+            </cover-view> -->
+            <cover-view class="item"
+                        @tap="itemHandle(0)">
+              拨打客服电话
+              <cover-view class="line"></cover-view>
+            </cover-view>
+            <cover-view class="item"
+                        @tap="itemHandle(1)">
+              常见问题
+              <cover-view class="line"></cover-view>
+            </cover-view>
+            <cover-view class="item"
+                        @tap="itemHandle(2)">
+              使用方法
             </cover-view>
           </cover-view>
         </cover-view>
@@ -73,18 +87,15 @@ const store = getStore()
 })
 export default class Index extends wepy.page {
   config = {
-    navigationBarTitleText: 'charger'
+    navigationBarTitleText: '海博充电'
   };
   data = {
     serviceData: [{
-      text: '拨打客服电话',
-      scheme: '/pages/home'
+      text: '拨打客服电话'
     }, {
-      text: '常见问题',
-      scheme: ''
+      text: '常见问题'
     }, {
-      text: '使用方法',
-      scheme: ''
+      text: '使用方法'
     }],
     scale: 15,
     serviceMask: false,
@@ -128,22 +139,46 @@ export default class Index extends wepy.page {
     async scanningHandle() {
       wx.scanCode({
         async success (res) {
+          console.log(res)
           let arr = res.result.split('/')
           let imei = arr[arr.length - 1]
           let user = wepy.getStorageSync(USER_SPECICAL_INFO)
           console.log('user')
           console.log(user)
-          let hasLend = await api.UserHasLend({
+          // 查询设备类型
+          let response1 = await api.queryDeviceType({
             query: {
-              userId: user.userid
+              imei: imei
             },
             disableLoad: true
           })
-          if (hasLend.data.status === 200) {
-            // 查询借出单
-            let result
-            if (hasLend.data.data.type === 'RETURN') {
-              result = await api.LendPortableBattery({
+          let deviceType
+          if (response1.data.status === 200) {
+            deviceType = response1.data.data.type
+          } else {
+            tip.showModal('提示', response1.data.data.errmsg)
+          }
+
+          if (deviceType === 'PB') {
+            // 充电宝类型
+            // 查询用户是否存在借出单
+            let response2 = await api.UserHasLend({
+              query: {
+                userId: user.userid
+              },
+              disableLoad: true
+            })
+            let lendType
+            if (response2.data.status === 200) {
+              lendType = response2.data.data.type
+            } else {
+              tip.showModal('提示', response2.data.data.errmsg)
+            }
+
+            // 借还充电宝
+            let response3
+            if (lendType === 'RETURN') {
+              response3 = await api.LendPortableBattery({
                 query: {
                   nmsUserId: user.userid,
                   imei: imei
@@ -151,7 +186,7 @@ export default class Index extends wepy.page {
                 loadText: '请放入充电宝...'
               })
             } else {
-              result = await api.LendPortableBattery({
+              response3 = await api.LendPortableBattery({
                 query: {
                   nmsUserId: user.userid,
                   imei: imei
@@ -159,10 +194,9 @@ export default class Index extends wepy.page {
                 loadText: '弹出后需取出...'
               })
             }
-            console.log(result)
-            // 借还充电宝
-            if (result.data.status === 200) {
-              if (result.data.type === 'RETURN') {
+            console.log(response3)
+            if (response3.data.status === 200) {
+              if (response3.data.type === 'RETURN') {
                 wepy.navigateTo({
                   url: '/pages/order'
                 })
@@ -172,20 +206,31 @@ export default class Index extends wepy.page {
             } else {
               let modal = await wepy.showModal({
                 title: '提示',
-                content: result.data.data.errmsg,
+                content: response3.data.data.errmsg,
                 showCancel: false
               })
               if (modal.confirm) {
-                if (result.data.data.errcode === '20303') {
+                if (response3.data.data.errcode === '20303') {
                   wepy.navigateTo({
                     url: '/pages/order'
                   })
                 }
               }
             }
-          } else {
-            // 查询借出单
-            tip.showModal('提示', hasLend.data.data.errmsg)
+          } else if (deviceType === 'PL') {
+            // 线充类型
+            // 查询充电线计费详情
+            let response4 = await api.chargingCableBill({
+              query: {}
+            })
+            if (response4.data.status === 200) {
+              let mealList = response4.data.data
+              wepy.navigateTo({
+                url: '/pages/packageMeal?mealList=' + JSON.stringify(mealList) + '&imei=' + imei
+              })
+            } else {
+              tip.showModal('提示', response4.data.data.errmsg)
+            }
           }
         },
         fail (res) {
@@ -207,10 +252,21 @@ export default class Index extends wepy.page {
     },
     itemHandle(i) {
       console.log(i)
+      i = parseInt(i)
       switch (i) {
         case 0:
           wx.makePhoneCall({
             phoneNumber: '020-37268390'
+          })
+          break
+        case 1:
+          wepy.navigateTo({
+            url: '/pages/commonProblem'
+          })
+          break
+        case 2:
+          wepy.navigateTo({
+            url: '/pages/useMethod'
           })
           break
       }
