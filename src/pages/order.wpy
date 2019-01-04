@@ -97,20 +97,23 @@ export default class Order extends wepy.page {
       this.totalPage = res.data.data.totalPage
       if (this.page === 1) {
         this.orderData = res.data.data.orders
-        this.orderData.sort((a, b) => {
-          if (a.pay_state === 2) {
-            return -1
-          } else if (a.pay_state !== 2) {
-            return 1
-          } else {
-            return 0
-          }
-        })
       } else {
         res.data.data.orders.map(i => {
           this.orderData.push(i)
         })
       }
+      // 时间排序、未支付排序
+      this.orderData.sort((a, b) => {
+        if (+new Date(a.lent_time) < +new Date(b.lent_time)) {
+          if (a.pay_state === 2) {
+            return -1
+          } else {
+            return 1
+          }
+        } else {
+          return -1
+        }
+      })
       this.$apply()
     } else {
       wx.showModal({

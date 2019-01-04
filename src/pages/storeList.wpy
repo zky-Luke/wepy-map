@@ -31,7 +31,7 @@
             <view class="time">{{item.address}}</view>
           </view>
           <view class="item">
-            <view class="item-charger" wx:if="{{item.type===1||item.type===3}}">
+            <view class="item-charger" wx:if="{{item.type===2||item.type===3}}">
               <image class="add" src="../images/chargerIcon.png" mode="aspectFit"/>
               提供座充
             </view>

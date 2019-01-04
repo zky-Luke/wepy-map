@@ -29,8 +29,12 @@
         <view class="pwd">
           <view class="li" wx:for="{{password}}" wx:key="item">{{item}}</view>
         </view>
-        <view class="ok" @tap="ok">我知道了</view>
+        <view class="list">
+          <view class="li" @tap="itemHandle({{1}})">我知道了</view>
+          <view class="li" @tap="itemHandle({{2}})">重新获取</view>
+        </view>
       </view>
+      <view class="tip">温馨提示：在规定套餐时间内可以重新获取密码；如重新获取密码超过3次请提交异常申请，客户会为您服务</view>
     </view>
   </view>
 </template>
@@ -58,6 +62,12 @@ export default class Bill extends wepy.page {
     this.bill = options.fee
     this.no = options.no
     this.page = options.page
+    // 已有订单
+    if (options.password) {
+      this.password = options.password
+      this.pwdShow = true
+      this.$apply()
+    }
   }
   methods = {
     payHandle(num) {
@@ -144,11 +154,30 @@ export default class Bill extends wepy.page {
         }
       }
     },
-    // 点击我知道了按钮
-    ok () {
-      wepy.reLaunch({
-        url: '/pages/home'
-      })
+    // 我知道了、重新获取按钮
+    async itemHandle (num) {
+      switch (num) {
+        case 1:
+          wepy.reLaunch({
+            url: '/pages/home'
+          })
+          break
+        case 2:
+          // 获取充电线密码
+          let response3 = await api.getPwd({
+            query: {
+              no: this.no
+            }
+          })
+          if (response3.data.status === 200) {
+            let password = response3.data.data.pwd
+            this.password = password.split('')
+            this.$apply()
+          } else {
+            tip.showModal('提示', response3.data.data.errmsg)
+          }
+          break
+      }
     }
   }
 }
@@ -260,14 +289,30 @@ export default class Bill extends wepy.page {
           text-align: center;
         }
       }
-      .ok{
-        .wh-l(200rpx, 80rpx);
-        font-size: 34rpx;
-        border: 1rpx solid #fff;
-        border-radius: 10rpx;
+      .list{
+        .wh-l(500rpx, auto);
         margin: 0 auto;
-        text-align: center;
+        display: flex;
+        justify-content: center;
+        .li{
+          .wh-l(200rpx, 80rpx);
+          font-size: 34rpx;
+          border: 1rpx solid #fff;
+          border-radius: 10rpx;
+          margin: 0 auto;
+          text-align: center;
+        }
       }
+    }
+    .tip{
+      .wh(620rpx, auto);
+      font-size: 24rpx;
+      position: absolute;
+      left: 50%;
+      bottom: 8.5%;
+      transform: translateX(-50%);
+      color: #FFF;
+      text-align: center;
     }
   }
 }

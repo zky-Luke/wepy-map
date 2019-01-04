@@ -63,11 +63,17 @@ export default class PackageMeal extends wepy.page {
           billId: this.mealList[this.active].id
         }
       })
+      console.log(response)
       if (response.data.status === 200) {
         wepy.navigateTo({
           url: '/pages/bill?fee=' + response.data.data.fee + '&no=' + response.data.data.out_trade_no + '&page=packageMeal'
         })
+      } else if (response.data.status === 205) {
+        wepy.navigateTo({
+          url: '/pages/bill?fee=' + response.data.data.fee + '&no=' + response.data.data.no + '&password=' + response.data.data.pwd + '&page=packageMeal'
+        })
       } else {
+        console.log(response)
         tip.showModal('提示', response.data.data.errmsg)
       }
     }

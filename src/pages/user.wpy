@@ -75,11 +75,11 @@ export default class User extends wepy.page {
         case '4':
           let res = await wepy.showModal({
             title: '拨打电话',
-            content: '020-37268390'
+            content: '400-628-1388'
           })
           if (res.confirm) {
             wx.makePhoneCall({
-              phoneNumber: '020-37268390'
+              phoneNumber: '400-628-1388'
             })
           }
           break

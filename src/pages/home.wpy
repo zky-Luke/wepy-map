@@ -26,6 +26,7 @@
           </cover-view>
         </cover-view>
         <cover-image class="cover-img" src="../images/landmark.png"/>
+        <cover-image class="reporting" @tap="reportHandle" src="../images/reporting.png"/>
         <cover-image class="location" @tap="moveToLocation" src="../images/restoration.png"/>
         <cover-image class="scanning" @tap="scanningHandle" src="../images/scanning.png"/>
         <cover-image class="service"
@@ -131,6 +132,12 @@ export default class Index extends wepy.page {
     this.hasUnpaidOrder()
   }
   methods = {
+    // 故障上报
+    reportHandle () {
+      wepy.navigateTo({
+        url: '/pages/faultReporting'
+      })
+    },
     // 当前位置
     moveToLocation() {
       this.mapCtx.moveToLocation()
@@ -256,7 +263,7 @@ export default class Index extends wepy.page {
       switch (i) {
         case 0:
           wx.makePhoneCall({
-            phoneNumber: '020-37268390'
+            phoneNumber: '400-628-1388'
           })
           break
         case 1:
@@ -533,6 +540,12 @@ export default class Index extends wepy.page {
         .f-center;
         margin-top: -34rpx;
       }
+      .reporting{
+        .wh(90rpx, 90rpx);
+        position: absolute;
+        left: 36rpx;
+        bottom: 150rpx;
+      }
       .location {
         .wh(100rpx, 100rpx);
         position: absolute;
@@ -544,7 +557,7 @@ export default class Index extends wepy.page {
         position: absolute;
         left: 50%;
         bottom: 40rpx;
-        margin-left: -100rpx;
+        transform: translateX(-50%);
       }
       .service {
         .wh(100rpx, 100rpx);

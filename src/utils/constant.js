@@ -22,6 +22,6 @@ export const HAIBO_APPID = 'qx63f900a708f68508'
 export const BALANCE = 'BALANCE'
 
 // 版本: 1、亓行   2、海博
-export const VERSION = 1
+export const VERSION = 2
 
 // 亓行wxc299c4b113250c58 海博wx2568e26691ff2b67

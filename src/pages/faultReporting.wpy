@@ -1,0 +1,209 @@
+<template>
+  <view class="faultReporting">
+    <view class="qrCode">
+      <view class="title">请扫描设备二维码</view>
+      <view class="input">
+        <input value="{{inputTxt}}" bindinput="inputHandle({{1}})" placeholder="扫描二维码或输入编码" type="text"/>
+        <view class="scan" @tap="scanHandle">
+          <image src="../images/scan@3x.png" mode="aspectFit"/>
+        </view>
+      </view>
+    </view>
+    <view class="report">
+      <view class="title">请选择设备具体故障</view>
+      <view class="list">
+        <view class="li" @tap="itemHandle({{1}})">
+          <view class="{{active === 1 ? 'active' : ''}} pic">
+            <image src="../images/charging_head@3x.png" mode="aspectFit"/>
+          </view>
+          <view class="text">充电头</view>
+        </view>
+        <view class="li" @tap="itemHandle({{2}})">
+          <view class="{{active === 2 ? 'active' : ''}} pic">
+            <image src="../images/password@3x.png" mode="aspectFit"/>
+          </view>
+          <view class="text">密码无效</view>
+        </view>
+        <view class="li" @tap="itemHandle({{3}})">
+          <view class="{{active === 3 ? 'active' : ''}} pic">
+            <image src="../images/data_line@3x.png" mode="aspectFit"/>
+          </view>
+          <view class="text">数据线</view>
+        </view>
+      </view>
+    </view>
+    <view class="textarea">
+      <textarea value="{{textarea}}" bindinput="inputHandle({{2}})" class="describe" placeholder="请描述具体故障" maxlength="140" />
+      <view class="count">{{num}}/140</view>
+    </view>
+    <view class="button" @tap="submit">提交</view>
+  </view>
+</template>
+
+<script>
+import wepy from 'wepy'
+
+export default class FaultReporting extends wepy.page {
+  config = {
+    navigationBarTitleText: '设备故障'
+  }
+  data = {
+    num: 0,
+    active: 1,
+    inputTxt: '',
+    textarea: ''
+  }
+  methods = {
+    // 扫码获取编号
+    async scanHandle () {
+      let self = this
+      wx.scanCode({
+        success(res) {
+          // console.log(res)
+          let arr = res.result.split('/')
+          let imei = arr[arr.length - 1]
+          console.log(imei)
+          self.inputTxt = imei
+          self.$apply()
+        }
+      })
+    },
+    // 多行输入框
+    inputHandle (index, e) {
+      // console.log(index)
+      // console.log(e)
+      switch (index) {
+        case 1:
+          this.inputTxt = e.detail.value
+          break
+        case 2:
+          this.num = e.detail.value.length
+          this.textarea = e.detail.value
+          break
+      }
+    },
+    // 故障原因
+    itemHandle (num) {
+      // console.log(num)
+      this.active = num
+    },
+    async submit () {
+      console.log(this.inputTxt)
+      console.log(this.active)
+      console.log(this.textarea)
+      // let response = await wepy.showModal({
+      //   title: '提示',
+      //   content: '提交成功！'
+      // })
+      // if (response.confirm) {
+      //   wepy.redirectTo({
+      //     url: '/pages/home'
+      //   })
+      // }
+    }
+  }
+}
+</script>
+
+<style lang="less">
+@import '../styles/mixin.less';
+.faultReporting{
+  .wh(100%, 100%);
+  padding: 30rpx 50rpx;
+  box-sizing: border-box;
+  .qrCode{
+    .wh(100%, auto);
+    .title{
+      font-size: 36rpx;
+      font-weight: bold;
+    }
+    .input{
+      .wh-l(100%, auto);
+      background-color: #f1f1f1;
+      border-radius: 8rpx;
+      position: relative;
+      margin: 36rpx 0 50rpx 0;
+      input{
+        .wh-l(100%, 90rpx);
+        padding: 0 100rpx 0 30rpx;
+        box-sizing: border-box;
+        font-size: 30rpx;
+      }
+      .scan{
+        .wh(100rpx, 100%);
+        position: absolute;
+        right: 0;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        image{
+          height: 40rpx;
+        }
+      }
+    }
+  }
+  .report{
+    .wh(100%, auto);
+    .title{
+      font-size: 36rpx;
+      font-weight: bold;
+      margin-bottom: 28rpx;
+    }
+    .list{
+      .wh(100%, 180rpx);
+      .li{
+        .wh(130rpx, 180rpx);
+        float: left;
+        margin-right: 30rpx;
+        .pic{
+          .wh(120rpx, 120rpx);
+          border: 1rpx solid #c0c0c0;
+          border-radius: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          image{
+            height: 60rpx;
+          }
+        }
+        .active{
+          border: 1rpx solid #e6a302;
+        }
+        .text{
+          font-size: 30rpx;
+          text-align: center;
+          margin-top: 10rpx;
+        }
+      }
+    }
+  }
+  .textarea{
+    .wh(100%, 200rpx);
+    margin-top: 40rpx;
+    box-sizing: border-box;
+    position: relative;
+    .describe{
+      .wh(100%, 100%);
+      padding: 20rpx;
+      box-sizing: border-box;
+      background-color: #f1f1f1;
+      font-size: 30rpx;
+    }
+    .count{
+      font-size: 25rpx;
+      position: absolute;
+      right: 26rpx;
+      bottom: 18rpx;
+    }
+  }
+  .button{
+    .wh-l(100%, 90rpx);
+    background: #F5D822;
+    color: #333;
+    border-radius: 10rpx;
+    text-align: center;
+    margin: 60rpx auto;
+  }
+}
+</style>

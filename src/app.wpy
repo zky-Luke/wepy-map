@@ -31,7 +31,8 @@ export default class extends wepy.app {
       'pages/bill',
       'pages/useMethod',
       'pages/commonProblem',
-      'pages/packageMeal'
+      'pages/packageMeal',
+      'pages/faultReporting'
     ],
     window: {
       backgroundTextStyle: 'dark',
