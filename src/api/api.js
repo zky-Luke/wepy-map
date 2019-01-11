@@ -66,6 +66,15 @@ const queryDeviceType = (params) => wxRequest(params, apiCharger + '/queryDevice
 // 获取充电线密码
 const getPwd = (params) => wxRequest(params, apiCharger + '/getPwd')
 
+// 检查当前用户是否存在正在使用订单
+const checkUserOrder = (params) => wxRequest(params, apiCharger + '/checkUserOrder')
+
+// 上报设备故障
+const reportError = (params) => wxRequest(params, apiCharger + '/reportError')
+
+// 取消订单
+const cancleOrder = (params) => wxRequest(params, apiCharger + '/cancleOrder')
+
 export default {
   GetUserSpecicalInfo,
   WechatPay,
@@ -82,5 +91,8 @@ export default {
   chargingCableBill,
   lineOrder,
   queryDeviceType,
-  getPwd
+  getPwd,
+  checkUserOrder,
+  reportError,
+  cancleOrder
 }

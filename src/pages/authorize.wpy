@@ -17,13 +17,33 @@ import { USER_INFO, USEE_CODE, USER_SPECICAL_INFO, HAIBO_APPID, QIXING_APPID, VE
 import api from '@/api/api'
 import error from '@/utils/errorCode.js'
 import tip from '@/utils/tip.js'
+import { getStore } from 'wepy-redux'
+const store = getStore()
 
 export default class Authorize extends wepy.page {
   config = {
     navigationBarTitleText: '海博充电'
   }
   data = {}
-  async onLoad() {
+  async onLoad(options) {
+    // 微信扫码参数
+    let url = decodeURIComponent(options.q)
+    // let url = 'http://hb.startai.net/scan?sn=HBTP190101000003'
+    console.log(options)
+    let params = {}
+    if (url.indexOf('?') !== -1) {
+      url = url.substr(url.indexOf('?') + 1)
+      console.log('url', url)
+      url.split('&').map(i => {
+        params[i.split('=')[0]] = i.split('=')[1]
+      })
+    }
+    console.log('params:', params)
+    // 存储微信扫码参数
+    store.dispatch({
+      type: 'SCAN_CODE_PARAMS',
+      payload: params
+    })
     let res = await wepy.getSetting()
     console.log(res)
     if ((res.authSetting)['scope.userInfo']) {
@@ -54,7 +74,7 @@ export default class Authorize extends wepy.page {
         }
       }
       wepy.redirectTo({
-        url: '/pages/home'
+        url: '/pages/home?page=authorize'
       })
     }
   }
@@ -78,7 +98,7 @@ export default class Authorize extends wepy.page {
         if (result.data.status === 200) {
           wepy.setStorageSync(USER_SPECICAL_INFO, result.data.data)
           wepy.redirectTo({
-            url: '/pages/home'
+            url: '/pages/home?page=authorize'
           })
         } else {
           let model = await wepy.showModal({
@@ -87,7 +107,7 @@ export default class Authorize extends wepy.page {
           })
           if (model.confirm) {
             wepy.redirectTo({
-              url: '/pages/home'
+              url: '/pages/home?page=authorize'
             })
           }
         }

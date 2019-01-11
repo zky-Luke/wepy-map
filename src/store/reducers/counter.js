@@ -1,10 +1,11 @@
 import { handleActions } from 'redux-actions'
-import { ASYNC_INCREMENT, STORE_LOCATION } from '../types/counter'
+import { ASYNC_INCREMENT, STORE_LOCATION, SCAN_CODE_PARAMS } from '../types/counter'
 
 const stateData = {
   num: 0,
   asyncNum: 0,
-  location: {}
+  location: {},
+  params: {} // 微信扫码传入参数
 }
 
 export default handleActions({
@@ -19,6 +20,12 @@ export default handleActions({
     return {
       ...state,
       location: action.payload
+    }
+  },
+  [SCAN_CODE_PARAMS] (state, action) {
+    return {
+      ...state,
+      params: action.payload
     }
   }
 }, stateData)

@@ -6,7 +6,7 @@
 export default class Tips {
   constructor() {
     this.isLoading = false
-    this.timeout = 40000
+    this.timeout = 60000
     this.timer = ''
   }
 
@@ -52,5 +52,5 @@ export default class Tips {
 
 // 静态变量，是否加载中
 Tips.isLoading = false
-Tips.timeout = 30000
+Tips.timeout = 60000
 Tips.timer = ''

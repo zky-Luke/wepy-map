@@ -17,7 +17,7 @@
 import wepy from 'wepy'
 import api from '@/api/api'
 import tip from '@/utils/tip.js'
-import { USER_SPECICAL_INFO } from '../utils/constant.js'
+import { USER_SPECICAL_INFO, ROUTER_BACK } from '../utils/constant.js'
 
 export default class PackageMeal extends wepy.page {
   config = {
@@ -65,16 +65,31 @@ export default class PackageMeal extends wepy.page {
       })
       console.log(response)
       if (response.data.status === 200) {
-        wepy.navigateTo({
+        wepy.setStorageSync(ROUTER_BACK, response.data.data.out_trade_no)
+        wepy.redirectTo({
           url: '/pages/bill?fee=' + response.data.data.fee + '&no=' + response.data.data.out_trade_no + '&page=packageMeal'
         })
-      } else if (response.data.status === 205) {
-        wepy.navigateTo({
-          url: '/pages/bill?fee=' + response.data.data.fee + '&no=' + response.data.data.no + '&password=' + response.data.data.pwd + '&page=packageMeal'
-        })
+      // } else if (response.data.status === 205) {
+      //   wepy.navigateTo({
+      //     url: '/pages/bill?fee=' + response.data.data.fee + '&no=' + response.data.data.no + '&password=' + response.data.data.pwd + '&page=packageMeal'
+      //   })
       } else {
         console.log(response)
-        tip.showModal('提示', response.data.data.errmsg)
+        if (response.data.data.errcode === '20304') {
+          let response4 = await wepy.showModal({
+            title: '提示',
+            content: response.data.data.errmsg,
+            confirmText: '去付款',
+            showCancel: false
+          })
+          if (response4.confirm) {
+            wepy.navigateTo({
+              url: '/pages/order'
+            })
+          }
+        } else {
+          tip.showModal('提示', response.data.data.errmsg)
+        }
       }
     }
   }

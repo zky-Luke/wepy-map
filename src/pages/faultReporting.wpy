@@ -42,6 +42,9 @@
 
 <script>
 import wepy from 'wepy'
+import { USER_SPECICAL_INFO } from '../utils/constant.js'
+import api from '@/api/api'
+import tip from '@/utils/tip.js'
 
 export default class FaultReporting extends wepy.page {
   config = {
@@ -53,6 +56,7 @@ export default class FaultReporting extends wepy.page {
     inputTxt: '',
     textarea: ''
   }
+  async onLoad() {}
   methods = {
     // 扫码获取编号
     async scanHandle () {
@@ -60,8 +64,7 @@ export default class FaultReporting extends wepy.page {
       wx.scanCode({
         success(res) {
           // console.log(res)
-          let arr = res.result.split('/')
-          let imei = arr[arr.length - 1]
+          let imei = res.result.substr(res.result.indexOf('HBTP'))
           console.log(imei)
           self.inputTxt = imei
           self.$apply()
@@ -91,15 +94,32 @@ export default class FaultReporting extends wepy.page {
       console.log(this.inputTxt)
       console.log(this.active)
       console.log(this.textarea)
-      // let response = await wepy.showModal({
-      //   title: '提示',
-      //   content: '提交成功！'
-      // })
-      // if (response.confirm) {
-      //   wepy.redirectTo({
-      //     url: '/pages/home'
-      //   })
-      // }
+      let user = wepy.getStorageSync(USER_SPECICAL_INFO)
+      // 充电线下单
+      let response = await api.reportError({
+        method: 'POST',
+        query: {
+          userId: user.userid,
+          cableId: this.inputTxt,
+          errType: this.active,
+          remark: this.textarea
+        }
+      })
+      console.log(response)
+      if (response.data.status === 200) {
+        let response2 = await wepy.showModal({
+          title: '提示',
+          content: '提交成功',
+          showCancel: false
+        })
+        if (response2.confirm) {
+          wepy.reLaunch({
+            url: '/pages/home'
+          })
+        }
+      } else {
+        tip.showModal('提示', response.data.data.errmsg)
+      }
     }
   }
 }

@@ -21,6 +21,9 @@ export const HAIBO_APPID = 'qx63f900a708f68508'
 // 余额
 export const BALANCE = 'BALANCE'
 
+// 监听后退
+export const ROUTER_BACK = 'routerBack'
+
 // 版本: 1、亓行   2、海博
 export const VERSION = 2
 

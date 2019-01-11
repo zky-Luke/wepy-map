@@ -44,6 +44,7 @@ import wepy from 'wepy'
 import { WePay } from '@/utils/wepay.js'
 import api from '@/api/api'
 import tip from '@/utils/tip.js'
+import { ROUTER_BACK } from '../utils/constant.js'
 
 export default class Bill extends wepy.page {
   config = {
@@ -78,17 +79,23 @@ export default class Bill extends wepy.page {
         switch (this.active) {
           // 微信支付
           case 1:
-            WePay({
-              fee: this.bill,
-              type: 1,
-              success: async (res) => {
-                let response1 = await wepy.showModal({
-                  title: '提示',
-                  content: '支付成功',
-                  showCancel: false
-                })
-                if (response1.confirm) {
-                  if (this.page === 'packageMeal') {
+            if (this.page === 'packageMeal') {
+              WePay({
+                order: {
+                  body: '充电线支付',
+                  fee_type: 'CNY',
+                  total_fee: this.bill,
+                  out_trade_no: this.no
+                },
+                success: async (res) => {
+                  // 取消未付款单
+                  wepy.setStorageSync(ROUTER_BACK, '')
+                  let response1 = await wepy.showModal({
+                    title: '提示',
+                    content: '支付成功',
+                    showCancel: false
+                  })
+                  if (response1.confirm) {
                     // 线充套餐界面
                     // 获取充电线密码
                     let response2 = await api.getPwd({
@@ -102,16 +109,32 @@ export default class Bill extends wepy.page {
                       this.pwdShow = true
                       this.$apply()
                     } else {
+                      console.log(response2)
                       tip.showModal('提示', response2.data.data.errmsg)
                     }
-                  } else {
+                  }
+                }
+              })
+            } else {
+              WePay({
+                fee: this.bill,
+                type: 1,
+                success: async (res) => {
+                  // 取消未付款单
+                  wepy.setStorageSync(ROUTER_BACK, '')
+                  let response1 = await wepy.showModal({
+                    title: '提示',
+                    content: '支付成功',
+                    showCancel: false
+                  })
+                  if (response1.confirm) {
                     wepy.reLaunch({
                       url: '/pages/home'
                     })
                   }
                 }
-              }
-            })
+              })
+            }
             break
           case 2:
             // 余额支付
@@ -121,6 +144,8 @@ export default class Bill extends wepy.page {
               }
             })
             if (res.data.status === 200) {
+              // 取消未付款单
+              wepy.setStorageSync(ROUTER_BACK, '')
               if (res.data.data.need_pay_fee === 0) {
                 if (this.page === 'packageMeal') {
                   // 线充套餐界面
@@ -137,18 +162,40 @@ export default class Bill extends wepy.page {
                     this.pwdShow = true
                     this.$apply()
                   } else {
+                    console.log(response2)
                     tip.showModal('提示', response2.data.data.errmsg)
                   }
                 } else {
-                  wepy.reLaunch({
-                    url: '/pages/home'
+                  let response3 = await wepy.showModal({
+                    title: '提示',
+                    content: '支付成功',
+                    showCancel: false
                   })
+                  if (response3.confirm) {
+                    wepy.reLaunch({
+                      url: '/pages/home'
+                    })
+                  }
                 }
               } else {
                 tip.showModal('提示', `还需支付${res.data.data.need_pay_fee / 100}元`)
               }
             } else {
-              tip.showModal('提示', res.data.data.errmsg)
+              if (res.data.data.errcode === '20305') {
+                let response4 = await wepy.showModal({
+                  title: '提示',
+                  content: res.data.data.errmsg,
+                  confirmText: '去充值',
+                  showCancel: false
+                })
+                if (response4.confirm) {
+                  wepy.navigateTo({
+                    url: '/pages/wallet'
+                  })
+                }
+              } else {
+                tip.showModal('提示', res.data.data.errmsg)
+              }
             }
             break
         }

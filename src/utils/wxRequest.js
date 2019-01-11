@@ -23,14 +23,24 @@ const wxRequest = async(params = {}, url) => {
       data: data,
       header: { 'Content-Type': 'application/json' }
     })
+    console.log('res', res)
+    if (res.statusCode === 404) {
+      tip.showModal('提示', '服务器错误')
+    }
     tip.loaded()
     return res
   } catch (err) {
+    console.log('err:', err)
     tip.loaded()
-    wx.showModal({
-      title: '提示',
-      content: err.errMsg,
-      showCancel: false
+    wx.getNetworkType({
+      success(res) {
+        // console.log(res.networkType === 'none')
+        if (res.networkType === 'none') {
+          tip.showModal('提示', '网络错误')
+        } else {
+          tip.showModal('提示', '服务器错误')
+        }
+      }
     })
     return Promise.reject(err.errMsg)
   }

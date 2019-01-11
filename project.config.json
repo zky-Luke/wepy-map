@@ -11,5 +11,33 @@
 	"appid": "wx2568e26691ff2b67",
 	"projectname": "wecharger",
 	"miniprogramRoot": "dist/",
-	"condition": {}
+	"condition": {
+		"search": {
+			"current": -1,
+			"list": []
+		},
+		"conversation": {
+			"current": -1,
+			"list": []
+		},
+		"plugin": {
+			"current": -1,
+			"list": []
+		},
+		"game": {
+			"list": []
+		},
+		"miniprogram": {
+			"current": 0,
+			"list": [
+				{
+					"id": 0,
+					"name": "test",
+					"pathName": "pages/authorize",
+					"query": "q=“http://hb.startai.net/scan/HBTP190101000003“",
+					"scene": "1011"
+				}
+			]
+		}
+	}
 }

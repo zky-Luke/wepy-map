@@ -93,8 +93,8 @@ export default class StoreList extends wepy.page {
       query: {
         device_type: 1,
         region: '',
-        lng: this.latitude || '0',
-        lat: this.longitude || '0',
+        lng: this.longitude || '0',
+        lat: this.latitude || '0',
         page: this.page,
         count: 10
       }
@@ -102,6 +102,13 @@ export default class StoreList extends wepy.page {
     console.log(res)
     if (res.data.status === 200) {
       this.storeData = res.data.data
+      this.storeData.sort((a, b) => {
+        if (a.distance > b.distance) {
+          return 1
+        } else {
+          return -1
+        }
+      })
       this.totalPage = res.data.data['0'].total_page
       this.$apply()
     } else {
@@ -118,9 +125,9 @@ export default class StoreList extends wepy.page {
         query: {
           device_type: 1,
           region: '',
-          lng: this.latitude || '0',
-          lat: this.longitude || '0',
-          page: ++this.page,
+          lng: this.longitude || '0',
+          lat: this.latitude || '0',
+          page: this.page,
           count: 10
         }
       })
@@ -128,6 +135,13 @@ export default class StoreList extends wepy.page {
       if (res.data.status === 200) {
         res.data.data.map(i => {
           this.storeData.push(i)
+        })
+        this.storeData.sort((a, b) => {
+          if (a.distance > b.distance) {
+            return 1
+          } else {
+            return -1
+          }
         })
         this.$apply()
         console.log(this.storeData)
