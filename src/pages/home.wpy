@@ -71,9 +71,9 @@
 
 <script>
 import wepy from 'wepy'
-import { USER_INFO, USER_SPECICAL_INFO, ROUTER_BACK } from '../utils/constant.js'
+import { USER_INFO } from '../utils/constant.js'
 import { connect, getStore } from 'wepy-redux'
-import api from '@/api/api'
+// import api from '@/api/api'
 import tip from '@/utils/tip.js'
 import storeDetails from '../components/store_details'
 
@@ -91,7 +91,7 @@ const store = getStore()
 })
 export default class Index extends wepy.page {
   config = {
-    navigationBarTitleText: '海博充电'
+    navigationBarTitleText: '充电桩'
   };
   data = {
     page: '',
@@ -129,40 +129,26 @@ export default class Index extends wepy.page {
   components = {
     storeDetails: storeDetails
   }
-  async onShow() {
-    let back = wepy.getStorageSync(ROUTER_BACK)
-    console.log('back:', back)
-    if (back) {
-      wepy.setStorageSync(ROUTER_BACK, '')
-      // 取消下单
-      let response = await api.cancleOrder({
-        query: {
-          no: back
-        }
-      })
-      if (response.data.status === 200) {
-        console.log('cancleOrder')
-      } else {
-        tip.showModal('提示', response.data.data.errmsg)
-      }
-    }
-  }
+  async onShow() {}
   async onLoad(options) {
-    this.page = options.page
-    console.log('page:', this.page)
-    console.log('params:', this.params)
     let userInfo = wepy.getStorageSync(USER_INFO)
     this.avatar = userInfo.avatarUrl
     this._mapInit()
-    this.hasUnpaidOrder()
+    // 下单请求示例
+    // let response = await api.cancleOrder({
+    //   query: {
+    //     no: back
+    //   }
+    // })
+    // if (response.data.status === 200) {
+    //   console.log('cancleOrder')
+    // } else {
+    //   tip.showModal('提示', response.data.data.errmsg)
+    // }
   }
   methods = {
     // 故障上报
-    reportHandle () {
-      wepy.navigateTo({
-        url: '/pages/faultReporting'
-      })
-    },
+    reportHandle () {},
     // 当前位置
     moveToLocation() {
       this.mapCtx.moveToLocation()
@@ -171,141 +157,7 @@ export default class Index extends wepy.page {
     async scanningHandle() {
       wx.scanCode({
         async success (res) {
-          console.log(res)
-          let arr = res.result.split('/')
-          let imei = arr[arr.length - 1]
-          if (imei.indexOf('HBTP') !== -1) {
-            imei = imei.substr(imei.indexOf('HBTP'))
-          }
-          let user = wepy.getStorageSync(USER_SPECICAL_INFO)
-          console.log('user')
-          console.log(user)
-          // 查询设备类型
-          let response1 = await api.queryDeviceType({
-            query: {
-              imei: imei
-            }
-            // disableLoad: true
-          })
-          let deviceType
-          if (response1.data.status === 200) {
-            deviceType = response1.data.data.type
-          } else {
-            tip.showModal('提示', response1.data.data.errmsg)
-          }
-
-          if (deviceType === 'PB') {
-            // 充电宝类型
-            // 查询用户是否存在借出单
-            let response2 = await api.UserHasLend({
-              query: {
-                userId: user.userid
-              }
-              // disableLoad: true
-            })
-            let lendType
-            if (response2.data.status === 200) {
-              lendType = response2.data.data.type
-              console.log('lendType:', lendType)
-            } else {
-              tip.showModal('提示', response2.data.data.errmsg)
-            }
-
-            // 借还充电宝
-            let response3
-            if (lendType === 'RETURN') {
-              response3 = await api.LendPortableBattery({
-                query: {
-                  nmsUserId: user.userid,
-                  imei: imei
-                },
-                loadText: '请放入充电宝...'
-              })
-            } else {
-              response3 = await api.LendPortableBattery({
-                query: {
-                  nmsUserId: user.userid,
-                  imei: imei
-                },
-                loadText: '弹出后需取出...'
-              })
-            }
-            console.log(response3)
-            if (response3.data.status === 200) {
-              if (response3.data.type === 'RETURN') {
-                wepy.navigateTo({
-                  url: '/pages/order'
-                })
-              } else {
-                tip.showModal('提示', '借出成功')
-              }
-            } else {
-              if (response3.data.data.errcode === '20303') {
-                // 用户存在未付款单
-                let modal1 = await wepy.showModal({
-                  title: '提示',
-                  content: response3.data.data.errmsg,
-                  confirmText: '去付款',
-                  showCancel: false
-                })
-                if (modal1.confirm) {
-                  wepy.navigateTo({
-                    url: '/pages/order'
-                  })
-                }
-              } else if (response3.data.data.errcode === '20304') {
-                // 用户余额不足
-                let modal1 = await wepy.showModal({
-                  title: '提示',
-                  content: response3.data.data.errmsg,
-                  confirmText: '去充值',
-                  showCancel: false
-                })
-                if (modal1.confirm) {
-                  wepy.navigateTo({
-                    url: '/pages/wallet'
-                  })
-                }
-              } else {
-                tip.showModal('提示', response3.data.data.errmsg)
-              }
-            }
-          } else if (deviceType === 'PL') {
-            // 线充类型
-            // 查询当前用户是否存在使用订单
-            let response4 = await api.checkUserOrder({
-              query: {
-                userId: user.userid,
-                cableId: imei
-              }
-            })
-            if (response4.data.status === 200) {
-              // 有正在使用订单
-              wepy.navigateTo({
-                url: '/pages/bill?fee=' + response4.data.data.fee + '&no=' + response4.data.data.no + '&password=' + response4.data.data.pwd + '&page=home'
-              })
-            } else if (response4.data.status === 201) {
-              // 无正在使用订单
-              // 查询充电线计费详情
-              let response5 = await api.chargingCableBill({
-                query: {}
-              })
-              if (response5.data.status === 200) {
-                let mealList = response5.data.data
-                wepy.navigateTo({
-                  url: '/pages/packageMeal?mealList=' + JSON.stringify(mealList) + '&imei=' + imei
-                })
-              } else {
-                tip.showModal('提示', response5.data.data.errmsg)
-              }
-            } else {
-              tip.showModal('提示', response4.data.data.errmsg)
-            }
-          }
-        },
-        fail (res) {
-          console.log(res)
-          // tip.showModal('扫码结果', res.errMsg)
+          tip.showModal('提示', res.result)
         }
       })
     },
@@ -320,33 +172,9 @@ export default class Index extends wepy.page {
           break
       }
     },
-    itemHandle(i) {
-      console.log(i)
-      i = parseInt(i)
-      switch (i) {
-        case 0:
-          wx.makePhoneCall({
-            phoneNumber: '400-628-1388'
-          })
-          break
-        case 1:
-          wepy.navigateTo({
-            url: '/pages/commonProblem'
-          })
-          break
-        case 2:
-          wepy.navigateTo({
-            url: '/pages/useMethod'
-          })
-          break
-      }
-    },
+    itemHandle(i) {},
     // 我的
-    goToUser () {
-      wepy.navigateTo({
-        url: '/pages/user'
-      })
-    },
+    goToUser () {},
     // 搜索附近
     search () {
       wx.chooseLocation({
@@ -359,12 +187,6 @@ export default class Index extends wepy.page {
         fail (res) {
           console.log(res)
         }
-      })
-    },
-    // 商家列表
-    goToStoreList () {
-      wepy.navigateTo({
-        url: '/pages/storeList?lat=' + this.latitude + '&lng=' + this.longitude
       })
     },
     // 拖拽选址
@@ -380,90 +202,13 @@ export default class Index extends wepy.page {
         })
         console.log(this.locationData.latitude)
         console.log(this.locationData.longitude)
-        if (this.locationData.longitude !== 0 && this.locationData.longitude !== 0) {
-          this.nearbyStore()
-        }
+        if (this.locationData.longitude !== 0 && this.locationData.longitude !== 0) {}
       }
     },
     // 点击标记点
-    async markertap(e) {
-      // 商铺位置
-      this.markers.map(i => {
-        if (i.id === e.markerId) {
-          store.dispatch({
-            type: 'STORE_LOCATION',
-            payload: {
-              lat: i.latitude,
-              lng: i.longitude
-            }
-          })
-        }
-      })
-      console.log(e)
-      // 商铺详情
-      let res = await api.MerchatDetails({
-        query: {
-          merchantId: e.markerId,
-          lng: this.location.lng,
-          lat: this.location.lat
-        }
-      })
-      console.log(res)
-      if (res.data.status === 200) {
-        this.detailData = res.data.data
-        this.storeShow = true
-        this.$apply()
-      } else {
-        tip.showModal('提示', res.data.data.errmsg)
-      }
-    },
+    async markertap(e) {},
     // 点击地图
-    maptap(e) {
-      this.storeShow = false
-      this.$apply()
-    }
-  }
-  // 显示附近商店
-  async nearbyStore() {
-    let res = await api.NearbyStore({
-      query: {
-        lng: this.locationData.longitude,
-        lat: this.locationData.latitude
-      }
-    })
-    console.log(res)
-    if (res.data.status === 200) {
-      this.markers = []
-      res.data.data.map(val => {
-        let icon
-        switch (val.type) {
-          case 1:
-            icon = '../images/baby.png'
-            break
-          case 2:
-            icon = '../images/charger.png'
-            break
-          case 3:
-            icon = '../images/chargerBaby.png'
-            break
-          default:
-            icon = '../images/charger.png'
-            break
-        }
-        this.markers.push({
-          id: val.merchant_id,
-          latitude: val.m_lat,
-          longitude: val.m_lng,
-          iconPath: icon,
-          width: 34.87,
-          height: 38
-        })
-      })
-      console.log(this.markers)
-      this.$apply()
-    } else {
-      tip.showModal('提示', res.data.data.errmsg)
-    }
+    maptap(e) {}
   }
   // 初始化地图
   async _mapInit() {
@@ -478,7 +223,6 @@ export default class Index extends wepy.page {
         // console.log(res)
         this.locationData.latitude = res.latitude
         this.locationData.longitude = res.longitude
-        this.nearbyStore()
         this.$apply()
         // console.log(this.markers)
       },
@@ -486,83 +230,6 @@ export default class Index extends wepy.page {
         console.log(res)
       }
     })
-  }
-  // 进入时查询是否有未付单（包含微信传参）
-  async hasUnpaidOrder() {
-    let user = wepy.getStorageSync(USER_SPECICAL_INFO)
-    let res = await api.QueryOrdersList({
-      query: {
-        userId: user.userid,
-        page: 1,
-        count: 10,
-        type: 3
-      }
-    })
-    if (res.data.status === 200) {
-      // res.data.data.total_page
-      // console.log(555)
-      console.log(res.data.data.orders)
-      let pay = res.data.data.orders
-      for (let i = 0; i < pay.length - 1; i++) {
-        if (pay[i].pay_state === 2) {
-          wepy.navigateTo({
-            url: '/pages/order'
-          })
-          return false
-        }
-      }
-      // 判断微信扫码传入参数
-      if (this.params.sn && this.page === 'authorize') {
-        this.page = ''
-        console.log('判断微信扫码传入参数')
-        // 查询设备类型
-        let response1 = await api.queryDeviceType({
-          query: {
-            imei: this.params.sn
-          }
-        })
-        let deviceType
-        if (response1.data.status === 200) {
-          deviceType = response1.data.data.type
-        } else {
-          tip.showModal('提示', response1.data.data.errmsg)
-        }
-        if (deviceType === 'PL') {
-          // 线充类型
-          // 查询当前用户是否存在使用订单
-          let response4 = await api.checkUserOrder({
-            query: {
-              userId: user.userid,
-              cableId: this.params.sn
-            }
-          })
-          if (response4.data.status === 200) {
-            // 有正在使用订单
-            wepy.navigateTo({
-              url: '/pages/bill?fee=' + response4.data.data.fee + '&no=' + response4.data.data.no + '&password=' + response4.data.data.pwd + '&page=home'
-            })
-          } else if (response4.data.status === 201) {
-            // 无正在使用订单
-            // 查询充电线计费详情
-            let response5 = await api.chargingCableBill({
-              query: {}
-            })
-            if (response5.data.status === 200) {
-              let mealList = response5.data.data
-              wepy.navigateTo({
-                url: '/pages/packageMeal?mealList=' + JSON.stringify(mealList) + '&imei=' + this.params.sn
-              })
-            } else {
-              tip.showModal('提示', response5.data.data.errmsg)
-            }
-          } else {
-            tip.showModal('提示', response4.data.data.errmsg)
-          }
-        }
-      }
-    } else {
-      tip.showModal('提示', res.data.data.errmsg)
-    }
   }
 }
 </script>

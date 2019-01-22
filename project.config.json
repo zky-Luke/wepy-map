@@ -8,8 +8,8 @@
 		"newFeature": true
 	},
 	"compileType": "miniprogram",
-	"appid": "wx2568e26691ff2b67",
-	"projectname": "wecharger",
+	"appid": "wxc299c4b113250c58",
+	"projectname": "chargingPlie",
 	"miniprogramRoot": "dist/",
 	"condition": {
 		"search": {

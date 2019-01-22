@@ -16,23 +16,7 @@ export default class extends wepy.app {
   config = {
     pages: [
       'pages/authorize',
-      'pages/home',
-      'pages/user',
-      'pages/wallet',
-      'pages/recharge',
-      'pages/deposit',
-      'pages/transaction',
-      'pages/withdraw',
-      'pages/order',
-      'pages/aboutUs',
-      'pages/storeList',
-      'pages/details',
-      'pages/information',
-      'pages/bill',
-      'pages/useMethod',
-      'pages/commonProblem',
-      'pages/packageMeal',
-      'pages/faultReporting'
+      'pages/home'
     ],
     window: {
       backgroundTextStyle: 'dark',

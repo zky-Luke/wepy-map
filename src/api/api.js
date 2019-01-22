@@ -24,75 +24,11 @@ const WechatPay = (params) => wxRequest(params, apiUser + '/pay/v1.0/wechat_mini
  * 充电宝业务
  */
 
-// 借出充电宝
-const LendPortableBattery = (params) => wxRequest(params, apiCharger + '/doLend')
-
-// 查询押金金额、余额
-const GetBalanceAndDeposit = (params) => wxRequest(params, apiCharger + '/getBalanceAndDeposit')
-
-// 查询订单列表
-const QueryOrdersList = (params) => wxRequest(params, apiCharger + '/queryOrders')
-
-// 用余额支付订单
-const BalancePaymentOrder = (params) => wxRequest(params, apiCharger + '/payByBalance')
-
 // 其他支付
 const OtherPayOrder = (params) => wxRequest(params, apiCharger + '/payOrder')
-
-// 附近店铺
-const NearbyStore = (params) => wxRequest(params, apiCharger + '/getLocation')
-
-// 查询店铺详情
-const MerchatDetails = (params) => wxRequest(params, apiCharger + '/getMerchatDetails')
-
-// 店铺分类
-const MechantClassification = (params) => wxRequest(params, apiCharger + '/getMechantClassification')
-
-// 查看明细
-const TransactionDetails = (params) => wxRequest(params, apiCharger + '/getTransactionDetails')
-
-// 查询是否有借出单
-const UserHasLend = (params) => wxRequest(params, apiCharger + '/getUserHasLend')
-
-// 查询充电线计费详情
-const chargingCableBill = (params) => wxRequest(params, apiCharger + '/queryChargingCableBill')
-
-// 充电线下单
-const lineOrder = (params) => wxRequest(params, apiCharger + '/doLineOrder')
-
-// 查询设备类型
-const queryDeviceType = (params) => wxRequest(params, apiCharger + '/queryDeviceType')
-
-// 获取充电线密码
-const getPwd = (params) => wxRequest(params, apiCharger + '/getPwd')
-
-// 检查当前用户是否存在正在使用订单
-const checkUserOrder = (params) => wxRequest(params, apiCharger + '/checkUserOrder')
-
-// 上报设备故障
-const reportError = (params) => wxRequest(params, apiCharger + '/reportError')
-
-// 取消订单
-const cancleOrder = (params) => wxRequest(params, apiCharger + '/cancleOrder')
 
 export default {
   GetUserSpecicalInfo,
   WechatPay,
-  LendPortableBattery,
-  GetBalanceAndDeposit,
-  QueryOrdersList,
-  BalancePaymentOrder,
-  OtherPayOrder,
-  NearbyStore,
-  MerchatDetails,
-  MechantClassification,
-  TransactionDetails,
-  UserHasLend,
-  chargingCableBill,
-  lineOrder,
-  queryDeviceType,
-  getPwd,
-  checkUserOrder,
-  reportError,
-  cancleOrder
+  OtherPayOrder
 }
